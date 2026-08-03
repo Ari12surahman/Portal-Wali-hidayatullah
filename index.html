@@ -1,28 +1,1305 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-    <meta charset="UTF-8">
+    <base target="_top">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <title>Portal Wali</title>
-    <meta name="description" content="Portal">
-
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="icon" type="image/png" href="https://Portal-Wali-hidayatullah.vercel.app/Hidayatullah.png">
-    <link rel="shortcut icon" type="image/png" href="https://Portal-Wali-hidayatullah.vercel.app/Hidayatullah.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://Portal-Wali-hidayatullah.vercel.app/Hidayatullah.png">
-    
+    <title>Portal Wali Santri</title>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0d9488">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Portal Wali">
+    <meta name="theme-color" content="#1a7d56">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- SheetJS (XLSX) & jsPDF untuk fitur Download Excel & PDF yang rapih -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #f1f5f9; }
-        iframe { display: block; width: 100%; height: 100%; border: none; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            background: linear-gradient(135deg, #f0fff4 0%, #fafffe 50%, #f0fff4 100%);
+            min-height: 100vh;
+        }
+
+        #page-login {
+            display: flex;
+            z-index: 50;
+        }
+
+        .fade-up {
+            animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #1a7d56, #10b981);
+            border-radius: 10px;
+        }
+
+        input[type="date"] {
+            -webkit-appearance: none;
+            min-height: 50px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table-container::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .btn-action {
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-action:active {
+            transform: scale(0.95);
+        }
+
+        .modal-overlay {
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-content {
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1a7d56, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, transparent 40%, rgba(255, 255, 255, 0.4) 50%, transparent 60%);
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
     </style>
 </head>
-<body>
-    <iframe src="https://script.google.com/macros/s/AKfycbwlexN9SO-3WRWROcrPNBxErspQ-dAhXN6sJ4uRkJpn4EHZh3_rd3EU2oHTMQ79SI3AYA/exec"></iframe>
+
+<body class="text-slate-800 select-none pb-10">
+
+    <!-- LOGIN PAGE -->
+    <div id="page-login"
+        class="fixed inset-0 bg-gradient-to-br from-[#1a7d56] via-emerald-600 to-teal-700 flex flex-col justify-center px-8">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500/20 rounded-full blur-3xl"></div>
+        </div>
+        <div class="w-full max-w-sm mx-auto relative z-10">
+            <div class="mb-10 text-center">
+                <div
+                    class="w-24 h-24 bg-white rounded-[1.5rem] flex items-center justify-center mx-auto mb-5 shadow-2xl shadow-black/20 transform rotate-3 overflow-hidden relative shine">
+                    <i id="defaultLogoIcon"
+                        class="fa-solid fa-user-shield text-[#1a7d56] text-4xl -rotate-3 relative z-10"></i>
+                    <img id="customLogoImg" src="" alt="Logo"
+                        class="w-full h-full object-cover hidden absolute inset-0 z-20">
+                </div>
+                <h1 id="appTitle" class="text-2xl font-extrabold text-white tracking-tight">Portal Wali</h1>
+                <p class="text-emerald-200 text-sm font-medium mt-1">Pantau Hafalan Ananda</p>
+            </div>
+
+            <form onsubmit="aksiLogin(event)" class="space-y-4">
+                <div class="space-y-1">
+                    <input type="text" id="u"
+                        class="w-full bg-white/95 backdrop-blur p-4 rounded-2xl focus:ring-4 focus:ring-white/30 outline-none text-base font-semibold transition shadow-lg text-slate-800 placeholder:text-slate-400"
+                        placeholder="Username / No. WA / Nama Santri" required>
+                </div>
+                <div class="space-y-1 relative">
+                    <input type="password" id="p"
+                        class="w-full bg-white/95 backdrop-blur p-4 pr-14 rounded-2xl focus:ring-4 focus:ring-white/30 outline-none text-lg font-semibold transition shadow-lg"
+                        placeholder="Password" required>
+                    <button type="button" onclick="togglePassword()"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 transition">
+                        <i id="eyeIcon" class="fa-solid fa-eye text-xl"></i>
+                    </button>
+                </div>
+                <button id="btnLogin"
+                    class="w-full bg-white text-[#1a7d56] hover:bg-emerald-50 active:scale-95 font-bold py-4 rounded-2xl shadow-xl text-lg transition duration-300 mt-2">MASUK</button>
+            </form>
+            <!-- Tombol Install PWA -->
+            <div class="mt-4 btn-install-pwa hidden">
+                <button type="button" onclick="mulaiInstallPWA()" class="w-full bg-emerald-900/60 hover:bg-emerald-900/80 text-white border border-emerald-300/30 font-semibold py-3.5 px-4 rounded-2xl shadow-lg flex items-center justify-center gap-3 transition duration-300 active:scale-95 text-base backdrop-blur-md">
+                    <i class="fa-solid fa-mobile-screen-button text-xl text-emerald-300 animate-bounce"></i>
+                    <span>Install Aplikasi ke Layar</span>
+                </button>
+            </div>
+            <p id="msg"
+                class="text-white text-center mt-6 text-sm font-bold bg-red-500/80 backdrop-blur py-3 rounded-xl hidden">
+            </p>
+        </div>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div id="page-dashboard" class="hidden min-h-screen">
+        <!-- Header -->
+        <div
+            class="bg-white/90 backdrop-blur-xl px-6 pt-12 pb-4 sticky top-0 z-30 flex justify-between items-center border-b border-slate-100 shadow-sm">
+            <div class="flex items-center gap-3.5">
+                <div
+                    class="w-12 h-12 bg-gradient-to-br from-[#1a7d56] to-emerald-500 text-white rounded-2xl flex items-center justify-center text-lg shadow-lg shadow-emerald-500/30">
+                    <i class="fa-solid fa-child-reaching"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Wali Santri Dari</p>
+                    <h2 id="dispNama" class="font-bold text-lg leading-tight text-slate-800">...</h2>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="mulaiInstallPWA()" title="Install Aplikasi"
+                    class="btn-install-pwa hidden bg-gradient-to-r from-emerald-600 to-[#1a7d56] hover:from-emerald-700 hover:to-[#146344] text-white px-3.5 py-2.5 rounded-xl font-bold text-xs shadow-md shadow-emerald-500/20 flex items-center gap-2 transition active:scale-95">
+                    <i class="fa-solid fa-mobile-screen-button text-sm animate-bounce"></i>
+                    <span class="font-bold">Install</span>
+                </button>
+                <button onclick="aksiLogout()" title="Keluar"
+                    class="w-11 h-11 rounded-xl flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition border border-slate-100">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </div>
+
+        <main class="p-5 w-full md:max-w-4xl lg:max-w-5xl mx-auto transition-all duration-300">
+
+            <!-- Hero Card -->
+            <div
+                class="bg-gradient-to-r from-[#1a7d56] via-emerald-600 to-teal-600 rounded-[2rem] p-6 text-white shadow-2xl shadow-emerald-600/30 mb-6 relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-10 transform translate-x-4 -translate-y-4"><i
+                        class="fa-solid fa-quran text-9xl"></i></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-white/5 rounded-full"></div>
+                <div class="flex justify-between items-end relative z-10">
+                    <div>
+                        <h3 id="dashAppTitle" class="text-emerald-100 text-xs font-bold uppercase tracking-wider mb-1">
+                            ...
+                        </h3>
+                        <p class="text-xl font-bold">Terus Semangat!</p>
+                        <p class="text-xs text-emerald-100 mt-2 opacity-80">Data diperbarui otomatis setiap 15 detik</p>
+                    </div>
+                    <button onclick="loadRiwayat(true)"
+                        class="bg-white/20 hover:bg-white/30 p-3 rounded-xl transition active:scale-90 backdrop-blur">
+                        <i class="fa-solid fa-arrows-rotate text-white"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECTION MONITOR TARGET & PROGRES HAFALAN (REAL-TIME) -->
+            <div id="sectionProgresWali" class="mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Kartu Progres Hafalan Utama -->
+                    <div class="glass-card md:col-span-2 p-5 rounded-[1.8rem] shadow-xl border border-emerald-100/60 relative overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[11px] font-extrabold px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5">
+                                    <i class="fa-solid fa-bullseye text-emerald-200"></i> TARGET HAFALAN ANANDA
+                                </span>
+                                <span id="badgeStatusTarget" class="px-2.5 py-1 rounded-full text-xs font-black tracking-wide uppercase bg-slate-100 text-slate-500 shadow-inner">
+                                    <i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat...
+                                </span>
+                            </div>
+                            <h4 id="dispTargetWali" class="text-lg md:text-xl font-black text-slate-800 tracking-tight leading-tight mb-2">
+                                <i class="fa-solid fa-spinner fa-spin text-[#1a7d56]"></i> Memuat Target...
+                            </h4>
+                            <div class="flex items-center justify-between text-xs font-bold text-slate-600 mb-1.5 mt-3">
+                                <span class="flex items-center gap-1"><i class="fa-solid fa-trophy text-amber-500"></i> Progres Tercapai: <span id="dispTercapaiWali" class="text-emerald-700 font-extrabold">...</span></span>
+                                <span id="dispPersenWali" class="text-sm font-black text-[#1a7d56]">0%</span>
+                            </div>
+                            <div class="w-full h-3.5 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200 shadow-inner mb-3">
+                                <div id="progressBarWali" class="h-full bg-gradient-to-r from-[#1a7d56] via-emerald-500 to-teal-400 rounded-full transition-all duration-700 shadow-md" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                            <span id="dispSisaWali" class="text-slate-600 font-semibold bg-emerald-50/70 px-3 py-1.5 rounded-xl border border-emerald-100/60 inline-flex items-center gap-1.5">
+                                <i class="fa-solid fa-chart-line text-[#1a7d56]"></i> Menghitung sisa target...
+                            </span>
+                            <div class="flex items-center gap-3 text-slate-500 text-[11px] font-semibold">
+                                <span><i class="fa-solid fa-layer-group text-slate-400"></i> Kelas: <b id="dispKelasWali" class="text-slate-700">-</b></span>
+                                <span><i class="fa-solid fa-user-tie text-slate-400"></i> Musyrif: <b id="dispMusyrifWali" class="text-slate-700">-</b></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kartu Rekap Absensi Ananda -->
+                    <div class="glass-card p-5 rounded-[1.8rem] shadow-xl border border-slate-100/60 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-sm font-black text-slate-800 mb-3 flex items-center gap-2">
+                                <span class="w-7 h-7 rounded-xl bg-teal-500 text-white flex items-center justify-center text-xs shadow-md"><i class="fa-solid fa-user-check"></i></span>
+                                Rekap Absensi
+                            </h4>
+                            <div class="grid grid-cols-2 gap-2.5 my-2">
+                                <div class="bg-emerald-50/80 border border-emerald-200 p-2.5 rounded-2xl text-center hover:scale-[1.02] transition">
+                                    <p class="text-[10px] uppercase font-extrabold text-emerald-600 tracking-wider">Hadir</p>
+                                    <p id="absenH" class="text-xl font-black text-emerald-700 mt-0.5">0</p>
+                                </div>
+                                <div class="bg-amber-50/80 border border-amber-200 p-2.5 rounded-2xl text-center hover:scale-[1.02] transition">
+                                    <p class="text-[10px] uppercase font-extrabold text-amber-600 tracking-wider">Sakit</p>
+                                    <p id="absenS" class="text-xl font-black text-amber-700 mt-0.5">0</p>
+                                </div>
+                                <div class="bg-blue-50/80 border border-blue-200 p-2.5 rounded-2xl text-center hover:scale-[1.02] transition">
+                                    <p class="text-[10px] uppercase font-extrabold text-blue-600 tracking-wider">Izin</p>
+                                    <p id="absenI" class="text-xl font-black text-blue-700 mt-0.5">0</p>
+                                </div>
+                                <div class="bg-rose-50/80 border border-rose-200 p-2.5 rounded-2xl text-center hover:scale-[1.02] transition">
+                                    <p class="text-[10px] uppercase font-extrabold text-rose-600 tracking-wider">Alpa</p>
+                                    <p id="absenA" class="text-xl font-black text-rose-700 mt-0.5">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-400 text-center font-semibold mt-3 pt-2 border-t border-slate-100">
+                            <i class="fa-solid fa-clock text-teal-500 mr-1"></i> Total pertemuan: <b id="absenTotal" class="text-slate-700">0</b>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="mb-5">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+                    <h3 class="font-bold text-xl text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-[#1a7d56]"></i> Riwayat & Laporan
+                    </h3>
+                    <div class="flex items-center gap-2">
+                        <button onclick="downloadPdfWali()"
+                            class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white text-xs font-extrabold shadow-md shadow-rose-500/25 hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-pdf text-sm"></i> Download PDF
+                        </button>
+                        <button onclick="downloadExcelWali()"
+                            class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 text-white text-xs font-extrabold shadow-md shadow-emerald-500/25 hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-excel text-sm"></i> Download Excel
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 rounded-[1.5rem] shadow-lg mb-4">
+                    <div class="flex gap-2 mb-3">
+                        <div class="relative flex-1">
+                            <input type="date" id="tglFilter"
+                                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl font-bold text-slate-700 outline-none text-sm h-12 focus:ring-2 focus:ring-[#1a7d56] transition"
+                                onchange="loadRiwayat(true)">
+                            <i
+                                class="fa-solid fa-calendar absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
+                        </div>
+                        <button onclick="loadRiwayat(true)"
+                            class="bg-gradient-to-r from-[#1a7d56] to-emerald-500 text-white px-4 rounded-xl font-bold active:scale-95 transition shadow-lg shadow-emerald-500/30 h-12 flex items-center justify-center w-12">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="setFilterHari('today')"
+                            class="flex-1 bg-gradient-to-r from-emerald-50 to-teal-50 text-[#1a7d56] py-2.5 rounded-xl text-xs font-bold active:scale-95 transition border border-emerald-100 hover:shadow-md">Hari
+                            Ini</button>
+                        <button onclick="setFilterHari('all')"
+                            class="flex-1 bg-slate-100 text-slate-600 py-2.5 rounded-xl text-xs font-bold active:scale-95 transition border border-slate-200 hover:bg-slate-200">Semua</button>
+                    </div>
+                </div>
+
+                <!-- Tab Toggle -->
+                <div class="flex bg-slate-200 p-1 rounded-xl mb-4">
+                    <button onclick="switchTab('hafalan')" id="tabHafalan"
+                        class="flex-1 py-2 rounded-lg font-bold text-sm transition bg-white text-[#1a7d56] shadow-sm">Riwayat
+                        Hafalan</button>
+                    <button onclick="switchTab('absensi')" id="tabAbsensi"
+                        class="flex-1 py-2 rounded-lg font-bold text-sm transition text-slate-500 hover:text-slate-700">Riwayat
+                        Absensi</button>
+                </div>
+
+                <!-- Table Container HAFALAN -->
+                <div id="viewHafalan" class="glass-card rounded-[1.5rem] shadow-lg overflow-hidden">
+                    <div class="table-container">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+                                <tr>
+                                    <th
+                                        class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">
+                                        No</th>
+                                    <th
+                                        class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">
+                                        Tanggal</th>
+                                    <th
+                                        class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">
+                                        Jenis</th>
+                                    <th
+                                        class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">
+                                        Surat</th>
+                                    <th
+                                        class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">
+                                        Halaman</th>
+                                    <th
+                                        class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">
+                                        Ayat</th>
+                                    <th
+                                        class="py-4 px-4 text-center font-bold text-slate-500 text-xs uppercase tracking-wider">
+                                        Nilai</th>
+                                    <th
+                                        class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider min-w-[200px]">
+                                        Catatan Musyrif</th>
+                                    <th
+                                        class="py-4 px-4 text-center font-bold text-slate-500 text-xs uppercase tracking-wider">
+                                        Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody" class="divide-y divide-slate-100">
+                                <tr>
+                                    <td colspan="8" class="text-center py-20 text-slate-300"><i
+                                            class="fa-solid fa-spinner fa-spin text-2xl"></i><br>Memuat Data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div id="paginationContainer"
+                        class="bg-slate-50 px-4 py-3 flex items-center justify-between border-t border-slate-200 hidden">
+                        <div class="text-xs text-slate-500 font-medium">
+                            Menampilkan <span id="showingFrom">0</span> - <span id="showingTo">0</span> dari <span
+                                id="totalData">0</span> data
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="prevPage()" id="btnPrev"
+                                class="px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-500 font-bold text-xs hover:bg-slate-100 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            <div id="pageNumbers" class="flex gap-1"></div>
+                            <button onclick="nextPage()" id="btnNext"
+                                class="px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-500 font-bold text-xs hover:bg-slate-100 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Container ABSENSI -->
+            <div id="viewAbsensi" class="glass-card rounded-[1.5rem] shadow-lg overflow-hidden hidden">
+                <div class="table-container hidden md:block">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+                            <tr>
+                                <th class="py-4 px-4 text-center font-bold text-slate-500 text-xs uppercase tracking-wider w-12">No</th>
+                                <th class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">Tanggal</th>
+                                <th class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">Nama Kegiatan</th>
+                                <th class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">Waktu / Jadwal</th>
+                                <th class="py-4 px-4 text-center font-bold text-slate-500 text-xs uppercase tracking-wider">Status</th>
+                                <th class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">Musyrif</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBodyAbsen" class="divide-y divide-slate-100">
+                            <tr>
+                                <td colspan="6" class="text-center py-20 text-slate-300"><i
+                                        class="fa-solid fa-spinner fa-spin text-2xl"></i><br>Memuat Absensi...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Tampilan Card Khusus HP (Mobile Responsive) agar rapi dan tidak berdempetan -->
+                <div id="cardContainerAbsen" class="md:hidden divide-y divide-slate-100 p-3 bg-slate-50/50">
+                    <div class="text-center py-20 text-slate-300"><i class="fa-solid fa-spinner fa-spin text-2xl"></i><br>Memuat Absensi...</div>
+                </div>
+            </div>
+    </div>
+
+    </main>
+    </div>
+
+
+
+
+
+    <script>
+        var curNama = null;
+        var autoRefreshInterval = null;
+        var allData = [];
+        var allAbsen = [];
+        var currentPage = 1;
+        var itemsPerPage = 10;
+        var activeTab = 'hafalan';
+        var infoAnanda = { kelas: '-', musyrif: '-', target: '-' };
+        var appConfig = { appName: "Portal Wali Santri", logoUrl: "" };
+
+        window.onload = function () {
+            initPWAModule();
+            loadAppConfig();
+            var sess = localStorage.getItem('wali_session_v2');
+            if (sess) {
+                var d = JSON.parse(sess);
+                bukaDashboard(d.namaSantri);
+            } else {
+                document.getElementById('page-login').style.display = 'flex';
+                document.getElementById('page-dashboard').classList.add('hidden');
+            }
+        }
+
+        function loadAppConfig() {
+            google.script.run.withSuccessHandler(function (config) {
+                appConfig = config;
+                if (config.appName) {
+                    document.getElementById('appTitle').innerText = config.appName;
+                    document.getElementById('dashAppTitle').innerText = config.appName;
+                    document.title = config.appName;
+                }
+                if (config.logoUrl && config.logoUrl.length > 20) {
+                    var img = document.getElementById('customLogoImg');
+                    img.src = config.logoUrl;
+                    img.onload = function () {
+                        img.classList.remove('hidden');
+                        document.getElementById('defaultLogoIcon').classList.add('hidden');
+                    };
+                }
+            }).getAppConfig();
+        }
+
+        function getTodayWIB() {
+            var d = new Date();
+            var year = d.getFullYear();
+            var month = String(d.getMonth() + 1).padStart(2, '0');
+            var day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function togglePassword() {
+            var passInput = document.getElementById('p');
+            var eyeIcon = document.getElementById('eyeIcon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        function aksiLogin(e) {
+            e.preventDefault();
+            var btn = document.getElementById('btnLogin');
+            var u = document.getElementById('u').value;
+            var p = document.getElementById('p').value;
+            var msg = document.getElementById('msg');
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+            msg.classList.add('hidden');
+
+            google.script.run
+                .withSuccessHandler(function (res) {
+                    if (res.status === 'SUKSES') {
+                        localStorage.setItem('wali_session_v2', JSON.stringify(res));
+                        bukaDashboard(res.namaSantri);
+                    } else {
+                        msg.innerText = res.msg;
+                        msg.classList.remove('hidden');
+                        btn.innerHTML = 'MASUK';
+                        btn.disabled = false;
+                    }
+                })
+                .withFailureHandler(function (err) {
+                    msg.innerText = "Gagal terhubung ke server. Coba lagi.";
+                    msg.classList.remove('hidden');
+                    btn.innerHTML = 'MASUK';
+                    btn.disabled = false;
+                })
+                .loginWali(u, p);
+        }
+
+        function bukaDashboard(nama) {
+            curNama = nama;
+            document.getElementById('page-login').style.display = 'none';
+            document.getElementById('page-dashboard').classList.remove('hidden');
+            document.getElementById('dispNama').innerText = nama;
+            setFilterHari('today');
+            loadProgresWali(nama);
+
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(function () {
+                loadRiwayat(false);
+                loadProgresWali(curNama);
+            }, 15000);
+        }
+
+        function aksiLogout() {
+            if (confirm('Keluar dari aplikasi?')) {
+                localStorage.removeItem('wali_session_v2');
+                curNama = null;
+                if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+
+                document.getElementById('page-dashboard').classList.add('hidden');
+                document.getElementById('page-login').style.display = 'flex';
+                document.getElementById('u').value = '';
+                document.getElementById('p').value = '';
+                document.getElementById('msg').classList.add('hidden');
+
+                var btn = document.getElementById('btnLogin');
+                btn.innerHTML = 'MASUK';
+                btn.disabled = false;
+            }
+        }
+
+        function setFilterHari(type) {
+            var dateInput = document.getElementById('tglFilter');
+            if (type === 'today') { dateInput.value = getTodayWIB(); }
+            else { dateInput.value = ''; }
+
+            currentPage = 1;
+            if (curNama) loadRiwayat(true);
+        }
+
+        // --- LOAD RIWAYAT & RENDER TABLE ---
+        function loadRiwayat(showLoading) {
+            if (!curNama) return;
+            var tgl = document.getElementById('tglFilter').value;
+            var tbody = document.getElementById('tableBody');
+
+            if (showLoading) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-20 text-slate-300"><i class="fa-solid fa-spinner fa-spin text-2xl"></i><br>Memuat Data...</td></tr>';
+            }
+
+            google.script.run.withSuccessHandler(function (arr) {
+                allData = arr || [];
+                currentPage = 1;
+                renderTable();
+            }).getRiwayatAnak(curNama, tgl);
+
+            // Load Absensi juga
+            google.script.run.withSuccessHandler(function (arrAbsen) {
+                allAbsen = arrAbsen || [];
+                renderTableAbsen();
+            }).getAbsensiSantri(curNama, tgl);
+
+            loadProgresWali(curNama);
+        }
+
+        function switchTab(tabName) {
+            activeTab = tabName;
+            var btnHafalan = document.getElementById('tabHafalan');
+            var btnAbsensi = document.getElementById('tabAbsensi');
+            var viewHafalan = document.getElementById('viewHafalan');
+            var viewAbsensi = document.getElementById('viewAbsensi');
+
+            if (tabName === 'hafalan') {
+                btnHafalan.classList.add('bg-white', 'text-[#1a7d56]', 'shadow-sm');
+                btnHafalan.classList.remove('text-slate-500');
+                btnAbsensi.classList.remove('bg-white', 'text-[#1a7d56]', 'shadow-sm');
+                btnAbsensi.classList.add('text-slate-500');
+
+                viewHafalan.classList.remove('hidden');
+                viewAbsensi.classList.add('hidden');
+            } else {
+                btnAbsensi.classList.add('bg-white', 'text-[#1a7d56]', 'shadow-sm');
+                btnAbsensi.classList.remove('text-slate-500');
+                btnHafalan.classList.remove('bg-white', 'text-[#1a7d56]', 'shadow-sm');
+                btnHafalan.classList.add('text-slate-500');
+
+                viewAbsensi.classList.remove('hidden');
+                viewHafalan.classList.add('hidden');
+            }
+        }
+
+        function renderTable() {
+            var tbody = document.getElementById('tableBody');
+            var pagination = document.getElementById('paginationContainer');
+
+            if (!allData || allData.length === 0) {
+                tbody.innerHTML = `
+            <tr>
+              <td colspan="8" class="text-center py-16">
+                <div class="inline-block p-6 rounded-2xl bg-slate-50">
+                  <i class="fa-solid fa-box-open text-5xl text-slate-200 mb-3"></i>
+                  <p class="text-slate-400 text-sm font-medium">Belum ada data hafalan</p>
+                </div>
+              </td>
+            </tr>`;
+                pagination.classList.add('hidden');
+                return;
+            }
+
+            var totalPages = Math.ceil(allData.length / itemsPerPage);
+            var startIdx = (currentPage - 1) * itemsPerPage;
+            var endIdx = Math.min(startIdx + itemsPerPage, allData.length);
+            var pageData = allData.slice(startIdx, endIdx);
+
+            var html = '';
+            pageData.forEach(function (x, idx) {
+                var globalIdx = startIdx + idx;
+                var nilaiColor = x.nilai == 'A' ? 'emerald' : (x.nilai == 'B' ? 'amber' : 'rose');
+                var catatan = x.catatan || '-';
+
+                var halCol = '-';
+                if (x.halAwal && x.halAwal != '-') {
+                    halCol = 'Hal ' + x.halAwal;
+                    if (x.halAkhir && x.halAkhir != '-' && x.halAkhir != x.halAwal) halCol += '-' + x.halAkhir;
+                }
+
+                var ayatCol = '';
+                if (x.ayatAwal && x.ayatAwal != '-') {
+                    ayatCol = 'Ayat ' + x.ayatAwal;
+                    if (x.ayatAkhir && x.ayatAkhir != '-' && x.ayatAkhir != x.ayatAwal) ayatCol += '-' + x.ayatAkhir;
+                }
+                if (!ayatCol) ayatCol = x.ayat || '-';
+
+                html += `
+            <tr class="hover:bg-blue-50/50 transition">
+                <td class="py-4 px-4 text-slate-500 font-medium">${globalIdx + 1}</td>
+                <td class="py-4 px-4">
+                    <div class="font-bold text-slate-700">${x.waktu}</div>
+                    <div class="text-[10px] text-slate-400">${x.jam}</div>
+                </td>
+                <td class="py-4 px-4">
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${x.jenis === 'Ziyadah' ? 'bg-blue-100 text-blue-600' : 'bg-purple-100 text-purple-600'}">${x.jenis}</span>
+                </td>
+                <td class="py-4 px-4 font-bold text-[#1a7d56]">${x.surat}</td>
+                <td class="py-4 px-4 text-slate-600">${halCol}</td>
+                <td class="py-4 px-4 text-slate-600">${ayatCol}</td>
+                <td class="py-4 px-4 text-center">
+                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl font-bold text-lg bg-${nilaiColor}-100 text-${nilaiColor}-600 border border-${nilaiColor}-200">${x.nilai}</span>
+                </td>
+                <td class="py-4 px-4">
+                    <div class="text-xs text-slate-500 leading-relaxed max-w-[250px]">
+                        <i class="fa-solid fa-quote-left text-slate-300 mr-1"></i>
+                        ${catatan}
+                    </div>
+                    <div class="text-[10px] text-slate-400 mt-1 font-medium">
+                        <i class="fa-solid fa-user-tie mr-1"></i> ${x.pelapor || '-'}
+                    </div>
+                </td>
+                <td class="py-4 px-4 text-center">
+                    <button onclick="bukaShare(${globalIdx})" class="btn-action w-9 h-9 rounded-lg bg-gradient-to-r from-emerald-500 to-green-500 text-white flex items-center justify-center shadow-md" title="Share WA">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </button>
+                </td>
+            </tr>`;
+            });
+            tbody.innerHTML = html;
+
+            // Update Pagination
+            pagination.classList.remove('hidden');
+            document.getElementById('showingFrom').innerText = startIdx + 1;
+            document.getElementById('showingTo').innerText = endIdx;
+            document.getElementById('totalData').innerText = allData.length;
+
+            document.getElementById('btnPrev').disabled = currentPage === 1;
+            document.getElementById('btnNext').disabled = currentPage === totalPages;
+
+            renderPageNumbers(totalPages);
+        }
+
+        function renderPageNumbers(totalPages) {
+            var container = document.getElementById('pageNumbers');
+            var html = '';
+            var maxVisible = 5;
+            var startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+            var endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+            if (endPage - startPage < maxVisible - 1) {
+                startPage = Math.max(1, endPage - maxVisible + 1);
+            }
+
+            for (var i = startPage; i <= endPage; i++) {
+                if (i === currentPage) {
+                    html += `<button class="px-3 py-2 rounded-lg bg-gradient-to-r from-[#1a7d56] to-emerald-500 text-white font-bold text-xs shadow-md">${i}</button>`;
+                } else {
+                    html += `<button onclick="goToPage(${i})" class="px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-500 font-bold text-xs hover:bg-slate-100 transition">${i}</button>`;
+                }
+            }
+            container.innerHTML = html;
+        }
+
+        function parseKegiatanDanWaktu(str) {
+            str = String(str || '-').trim();
+            var kegiatan = str;
+            var jam = '-';
+            var match = str.match(/^(.*?)\s*\((.*?)\)$/);
+            if (match) {
+                kegiatan = match[1].trim();
+                jam = match[2].trim();
+            } else if (str === 'Subuh' || str === 'Maghrib' || str === 'Isya' || str === 'Ashar' || str === 'Dzuhur') {
+                kegiatan = 'Tahfidz - ' + str;
+                jam = "Sesi " + str;
+            } else if (str.indexOf('-') !== -1 && str.match(/\d{2}:\d{2}/)) {
+                kegiatan = 'Kegiatan Harian';
+                jam = str;
+            }
+            return { kegiatan: kegiatan || '-', waktu: jam || '-' };
+        }
+
+        function renderTableAbsen() {
+            var tbody = document.getElementById('tableBodyAbsen');
+            var cardContainer = document.getElementById('cardContainerAbsen');
+            if (!allAbsen || allAbsen.length === 0) {
+                if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-12 text-slate-400 italic font-medium"><i class="fa-solid fa-calendar-xmark text-3xl text-slate-300 block mb-2"></i>Belum ada data absensi tercatat</td></tr>`;
+                if (cardContainer) cardContainer.innerHTML = `<div class="text-center py-12 text-slate-400 italic font-medium"><i class="fa-solid fa-calendar-xmark text-3xl text-slate-300 block mb-2"></i>Belum ada data absensi tercatat</div>`;
+                return;
+            }
+
+            var htmlTable = '';
+            var htmlCards = '';
+            var mapStatus = { 'H': 'Hadir', 'S': 'Sakit', 'I': 'Izin', 'A': 'Alpa' };
+            var mapColor = { 'H': 'emerald', 'S': 'amber', 'I': 'blue', 'A': 'rose' };
+
+            allAbsen.forEach(function (x, idx) {
+                var st = mapStatus[x.status] || x.status;
+                var color = mapColor[x.status] || 'slate';
+                var kw = parseKegiatanDanWaktu(x.waktu);
+
+                // Desktop Table Row
+                htmlTable += `
+                <tr class="hover:bg-slate-50 transition border-b border-slate-50 last:border-0">
+                    <td class="py-3 px-4 text-center text-slate-400 font-bold text-xs">${idx + 1}</td>
+                    <td class="py-3 px-4 text-slate-600 font-semibold text-xs whitespace-nowrap"><i class="fa-regular fa-calendar mr-1.5 text-blue-500"></i>${x.tanggal}</td>
+                    <td class="py-3 px-4">
+                        <span class="font-extrabold text-slate-800 text-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-calendar-check text-teal-600"></i> ${kw.kegiatan}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-xl inline-flex items-center gap-1 border border-amber-100/80">
+                            <i class="fa-regular fa-clock text-amber-500"></i> ${kw.waktu}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        <span class="px-3 py-1 rounded-full text-xs font-black bg-${color}-500 text-white shadow-sm shadow-${color}-500/30">${st.toUpperCase()}</span>
+                    </td>
+                    <td class="py-3 px-4 text-slate-500 font-semibold text-xs"><i class="fa-solid fa-user-tie mr-1 text-slate-400"></i>${x.musyrif || '-'}</td>
+                </tr>
+                `;
+
+                // Mobile Card View (HP)
+                htmlCards += `
+                <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md transition mb-3 last:mb-0 flex flex-col gap-3">
+                    <div class="flex items-start justify-between gap-2 border-b border-slate-100 pb-2.5">
+                        <div>
+                            <p class="text-[10px] font-bold text-teal-600 uppercase tracking-wider flex items-center gap-1 mb-0.5"><i class="fa-solid fa-calendar-check text-teal-500"></i> NAMA KEGIATAN</p>
+                            <h4 class="text-base font-black text-slate-800 leading-tight">${kw.kegiatan}</h4>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-black bg-${color}-500 text-white shadow-md shadow-${color}-500/30 shrink-0">${st.toUpperCase()}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100/80">
+                            <p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Waktu / Jadwal</p>
+                            <p class="font-black text-slate-700 mt-1 flex items-center gap-1 text-xs"><i class="fa-regular fa-clock text-amber-500"></i> ${kw.waktu}</p>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100/80">
+                            <p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Tanggal Absen</p>
+                            <p class="font-black text-slate-700 mt-1 flex items-center gap-1 text-xs"><i class="fa-regular fa-calendar text-blue-500"></i> ${x.tanggal}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between text-[11px] text-slate-500 font-semibold pt-0.5 border-t border-slate-100">
+                        <span><i class="fa-solid fa-user-tie mr-1.5 text-slate-400"></i> Musyrif Pembina: <b class="text-slate-700 font-bold">${x.musyrif || '-'}</b></span>
+                        <span class="text-[10px] text-slate-300 font-bold">#${idx + 1}</span>
+                    </div>
+                </div>
+                `;
+            });
+            if (tbody) tbody.innerHTML = htmlTable;
+            if (cardContainer) cardContainer.innerHTML = htmlCards;
+        }
+
+        function prevPage() { if (currentPage > 1) { currentPage--; renderTable(); } }
+        function nextPage() {
+            var totalPages = Math.ceil(allData.length / itemsPerPage);
+            if (currentPage < totalPages) { currentPage++; renderTable(); }
+        }
+        function goToPage(page) { currentPage = page; renderTable(); }
+
+
+        // --- SHARE WHATSAPP (TEXT ONLY) ---
+        function bukaShare(idx) {
+            var x = allData[idx];
+
+            var detailHafalan = '';
+            if (x.halAwal && x.halAwal != '-') {
+                detailHafalan += 'Hal ' + x.halAwal;
+                if (x.halAkhir && x.halAkhir != '-' && x.halAkhir != x.halAwal) detailHafalan += '-' + x.halAkhir;
+            }
+            if (x.ayatAwal && x.ayatAwal != '-') {
+                if (detailHafalan) detailHafalan += ' ';
+                detailHafalan += 'Ayat ' + x.ayatAwal;
+                if (x.ayatAkhir && x.ayatAkhir != '-' && x.ayatAkhir != x.ayatAwal) detailHafalan += '-' + x.ayatAkhir;
+            }
+            if (!detailHafalan) detailHafalan = x.ayat || '';
+
+            var text = encodeURIComponent(
+                '*LAPORAN CAPAIAN HAFALAN*\n' +
+                '' + (appConfig.appName || 'Portal Wali Santri') + '\n\n' +
+                'Nama: ' + curNama + '\n' +
+                'Tanggal: ' + x.waktu + '\n' +
+                'Waktu: ' + x.jam + '\n' +
+                '' + x.jenis + ': ' + x.surat + ' ' + detailHafalan + '\n' +
+                'Nilai: ' + x.nilai + '\n\n' +
+                'Catatan: ' + (x.catatan || '-') + '\n' +
+                'Musyrif: ' + (x.pelapor || '-')
+            );
+            window.open('https://wa.me/?text=' + text, '_blank');
+        }
+
+        // --- LOAD PROGRES HAFALAN & ABSENSI REAL-TIME ---
+        function loadProgresWali(nama) {
+            if (!nama) return;
+            var badge = document.getElementById('badgeStatusTarget');
+            if (badge && badge.innerText === 'MEMUAT...') badge.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat...';
+
+            google.script.run.withSuccessHandler(function (prog) {
+                if (!prog) return;
+                infoAnanda.kelas = prog.kelas || '-';
+                infoAnanda.musyrif = prog.musyrif || '-';
+                infoAnanda.target = prog.targetDisplay || '-';
+
+                var tgtEl = document.getElementById('dispTargetWali');
+                if (tgtEl) tgtEl.innerText = prog.targetDisplay || 'Target Reguler / Standar';
+                
+                var capEl = document.getElementById('dispTercapaiWali');
+                if (capEl) capEl.innerText = prog.tercapai || '0 Surat (0 Hal)';
+                
+                var prsEl = document.getElementById('dispPersenWali');
+                if (prsEl) prsEl.innerText = Math.round(prog.persen || 0) + '%';
+                
+                var barEl = document.getElementById('progressBarWali');
+                if (barEl) barEl.style.width = Math.min(100, Math.max(0, prog.persen || 0)) + '%';
+                
+                var sisEl = document.getElementById('dispSisaWali');
+                if (sisEl) sisEl.innerHTML = '<i class="fa-solid fa-chart-line text-[#1a7d56] mr-1.5"></i> ' + (prog.sisa || 'Belum ada catatan');
+                
+                var klsEl = document.getElementById('dispKelasWali');
+                if (klsEl) klsEl.innerText = prog.kelas || '-';
+                
+                var msyEl = document.getElementById('dispMusyrifWali');
+                if (msyEl) msyEl.innerText = prog.musyrif || '-';
+
+                var st = prog.status || 'Baru Mulai';
+                var badgeColor = 'bg-slate-100 text-slate-600 border-slate-300';
+                if (st === 'Tercapai!') badgeColor = 'bg-emerald-500 text-white shadow-md shadow-emerald-500/30';
+                else if (st === 'Sesuai Target') badgeColor = 'bg-teal-500 text-white shadow-md shadow-teal-500/30';
+                else if (st === 'Sudah Setengahnya') badgeColor = 'bg-amber-500 text-white shadow-md shadow-amber-500/30';
+                else badgeColor = 'bg-blue-500 text-white shadow-md shadow-blue-500/30';
+
+                if (badge) {
+                    badge.className = 'px-3 py-1 rounded-full text-xs font-black tracking-wide uppercase transition-all duration-300 ' + badgeColor;
+                    badge.innerText = st;
+                }
+
+                if (prog.absensi) {
+                    var elH = document.getElementById('absenH'); if (elH) elH.innerText = prog.absensi.H || 0;
+                    var elS = document.getElementById('absenS'); if (elS) elS.innerText = prog.absensi.S || 0;
+                    var elI = document.getElementById('absenI'); if (elI) elI.innerText = prog.absensi.I || 0;
+                    var elA = document.getElementById('absenA'); if (elA) elA.innerText = prog.absensi.A || 0;
+                    var elTot = document.getElementById('absenTotal'); if (elTot) elTot.innerText = prog.absensi.total || 0;
+                }
+            }).getProgresDanTargetWali(nama);
+        }
+
+        // --- DOWNLOAD EXCEL (XLSX) YANG RAPI & BER-BORDER ---
+        function downloadExcelWali() {
+            if (activeTab === 'hafalan') {
+                if (!allData || allData.length === 0) return alert('Belum ada data hafalan untuk diunduh.');
+                var wsData = [];
+                wsData.push(["LAPORAN MUTABA'AH HAFALAN SANTRI"]);
+                wsData.push(["Portal Wali Santri - " + (appConfig.appName || "")]);
+                wsData.push(["Nama Santri:", curNama, "Kelas:", infoAnanda.kelas]);
+                wsData.push(["Musyrif Pembina:", infoAnanda.musyrif, "Target Hafalan:", infoAnanda.target]);
+                wsData.push([""]);
+                wsData.push(["No", "Tanggal", "Waktu / Sesi", "Jenis Setoran", "Surat", "Halaman", "Ayat", "Nilai", "Catatan Musyrif", "Musyrif"]);
+
+                allData.forEach(function (x, i) {
+                    var halCol = x.halAwal && x.halAwal != '-' ? 'Hal ' + x.halAwal + (x.halAkhir && x.halAkhir != '-' && x.halAkhir != x.halAwal ? '-' + x.halAkhir : '') : '-';
+                    var ayatCol = x.ayatAwal && x.ayatAwal != '-' ? 'Ayat ' + x.ayatAwal + (x.ayatAkhir && x.ayatAkhir != '-' && x.ayatAkhir != x.ayatAwal ? '-' + x.ayatAkhir : '') : (x.ayat || '-');
+                    wsData.push([i + 1, x.waktu, x.jam, x.jenis, x.surat, halCol, ayatCol, x.nilai, x.catatan || '-', x.pelapor || '-']);
+                });
+
+                var wb = XLSX.utils.book_new();
+                var ws = XLSX.utils.aoa_to_sheet(wsData);
+                ws['!cols'] = [ {wch: 5}, {wch: 14}, {wch: 16}, {wch: 14}, {wch: 22}, {wch: 15}, {wch: 15}, {wch: 8}, {wch: 35}, {wch: 20} ];
+                XLSX.utils.book_append_sheet(wb, ws, "Riwayat Hafalan");
+                XLSX.writeFile(wb, "Laporan_Hafalan_" + (curNama ? curNama.replace(/\s+/g, '_') : 'Santri') + ".xlsx");
+            } else {
+                if (!allAbsen || allAbsen.length === 0) return alert('Belum ada data absensi untuk diunduh.');
+                var wsData = [];
+                wsData.push(["LAPORAN REKAP ABSENSI SANTRI"]);
+                wsData.push(["Portal Wali Santri - " + (appConfig.appName || "")]);
+                wsData.push(["Nama Santri:", curNama, "Kelas:", infoAnanda.kelas]);
+                wsData.push(["Musyrif Pembina:", infoAnanda.musyrif, "Tanggal Unduh:", getTodayWIB()]);
+                wsData.push([""]);
+                wsData.push(["No", "Tanggal", "Nama Kegiatan", "Waktu / Jadwal", "Status Kehadiran", "Musyrif"]);
+
+                var mapStatus = { 'H': 'Hadir', 'S': 'Sakit', 'I': 'Izin', 'A': 'Alpa' };
+                allAbsen.forEach(function (x, i) {
+                    var kw = parseKegiatanDanWaktu(x.waktu);
+                    wsData.push([i + 1, x.tanggal, kw.kegiatan, kw.waktu, mapStatus[x.status] || x.status, x.musyrif || '-']);
+                });
+
+                var wb = XLSX.utils.book_new();
+                var ws = XLSX.utils.aoa_to_sheet(wsData);
+                ws['!cols'] = [ {wch: 5}, {wch: 14}, {wch: 28}, {wch: 18}, {wch: 16}, {wch: 25} ];
+                XLSX.utils.book_append_sheet(wb, ws, "Riwayat Absensi");
+                XLSX.writeFile(wb, "Laporan_Absensi_" + (curNama ? curNama.replace(/\s+/g, '_') : 'Santri') + ".xlsx");
+            }
+        }
+
+        // --- DOWNLOAD PDF YANG RAPI, TABEL BER-BORDER & HEADER JELAS ---
+        function downloadPdfWali() {
+            var { jsPDF } = window.jspdf;
+            var doc = new jsPDF({ orientation: activeTab === 'hafalan' ? 'landscape' : 'portrait', unit: 'mm', format: 'a4' });
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(16);
+            doc.setTextColor(26, 125, 86);
+            doc.text(activeTab === 'hafalan' ? "LAPORAN MUTABA'AH HAFALAN SANTRI" : "LAPORAN REKAP ABSENSI SANTRI", 14, 18);
+            
+            doc.setFontSize(11);
+            doc.setTextColor(100, 116, 139);
+            doc.text((appConfig.appName || "Portal Wali Santri") + " — Pantau Hafalan & Kehadiran", 14, 25);
+
+            doc.setDrawColor(203, 213, 225);
+            doc.setFillColor(248, 250, 252);
+            doc.roundedRect(14, 30, activeTab === 'hafalan' ? 269 : 182, 22, 2, 2, 'FD');
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(51, 65, 85);
+            doc.text("Nama Santri : " + (curNama || '-'), 18, 38);
+            doc.text("Kelas            : " + infoAnanda.kelas, 18, 46);
+            doc.text("Musyrif        : " + infoAnanda.musyrif, activeTab === 'hafalan' ? 140 : 100, 38);
+            doc.text(activeTab === 'hafalan' ? "Target          : " + infoAnanda.target : "Tanggal Cetak : " + getTodayWIB(), activeTab === 'hafalan' ? 140 : 100, 46);
+
+            if (activeTab === 'hafalan') {
+                if (!allData || allData.length === 0) return alert('Belum ada data hafalan untuk diunduh.');
+                var head = [["No", "Tanggal", "Waktu", "Jenis", "Surat", "Halaman", "Ayat", "Nilai", "Catatan Musyrif", "Pelapor"]];
+                var body = allData.map(function (x, i) {
+                    var halCol = x.halAwal && x.halAwal != '-' ? 'Hal ' + x.halAwal + (x.halAkhir && x.halAkhir != '-' && x.halAkhir != x.halAwal ? '-' + x.halAkhir : '') : '-';
+                    var ayatCol = x.ayatAwal && x.ayatAwal != '-' ? 'Ayat ' + x.ayatAwal + (x.ayatAkhir && x.ayatAkhir != '-' && x.ayatAkhir != x.ayatAwal ? '-' + x.ayatAkhir : '') : (x.ayat || '-');
+                    return [i + 1, x.waktu, x.jam, x.jenis, x.surat, halCol, ayatCol, x.nilai, x.catatan || '-', x.pelapor || '-'];
+                });
+
+                doc.autoTable({
+                    startY: 56,
+                    head: head,
+                    body: body,
+                    theme: 'grid',
+                    styles: { fontSize: 9, cellPadding: 3, textColor: [51, 65, 85] },
+                    headStyles: { fillColor: [26, 125, 86], textColor: 255, fontStyle: 'bold', halign: 'center' },
+                    columnStyles: {
+                        0: { halign: 'center', cellWidth: 10 },
+                        1: { cellWidth: 23 },
+                        3: { halign: 'center', cellWidth: 20 },
+                        4: { fontStyle: 'bold', textColor: [26, 125, 86] },
+                        7: { halign: 'center', fontStyle: 'bold' }
+                    },
+                    margin: { top: 56, left: 14, right: 14 }
+                });
+                doc.save("Laporan_Hafalan_" + (curNama ? curNama.replace(/\s+/g, '_') : 'Santri') + ".pdf");
+            } else {
+                if (!allAbsen || allAbsen.length === 0) return alert('Belum ada data absensi untuk diunduh.');
+                var head = [["No", "Tanggal", "Nama Kegiatan", "Waktu / Jadwal", "Status", "Musyrif"]];
+                var mapStatus = { 'H': 'Hadir', 'S': 'Sakit', 'I': 'Izin', 'A': 'Alpa' };
+                var body = allAbsen.map(function (x, i) {
+                    var kw = parseKegiatanDanWaktu(x.waktu);
+                    return [i + 1, x.tanggal, kw.kegiatan, kw.waktu, mapStatus[x.status] || x.status, x.musyrif || '-'];
+                });
+
+                doc.autoTable({
+                    startY: 56,
+                    head: head,
+                    body: body,
+                    theme: 'grid',
+                    styles: { fontSize: 9, cellPadding: 3, textColor: [51, 65, 85] },
+                    headStyles: { fillColor: [26, 125, 86], textColor: 255, fontStyle: 'bold', halign: 'center' },
+                    columnStyles: {
+                        0: { halign: 'center', cellWidth: 10 },
+                        1: { cellWidth: 24 },
+                        2: { fontStyle: 'bold', textColor: [26, 125, 86], cellWidth: 46 },
+                        3: { cellWidth: 32 },
+                        4: { halign: 'center', fontStyle: 'bold', cellWidth: 22 }
+                    },
+                    margin: { top: 56, left: 14, right: 14 }
+                });
+                doc.save("Laporan_Absensi_" + (curNama ? curNama.replace(/\s+/g, '_') : 'Santri') + ".pdf");
+            }
+        }
+
+        // ==================== FITUR INSTALL PWA ====================
+        var deferredPrompt = null;
+
+        function initPWAModule() {
+            try {
+                localStorage.removeItem('pwa_installed_flag');
+                localStorage.removeItem('admin_pwa_installed_flag');
+            } catch (e) {}
+
+            var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true || document.referrer.includes('android-app://');
+            if (isStandalone) {
+                sembunyikanTombolPWA();
+                return;
+            }
+
+            try {
+                var manifestObj = {
+                    "name": appConfig ? (appConfig.appName || "Portal Wali Santri") : "Portal Wali Santri",
+                    "short_name": "Portal Wali",
+                    "start_url": window.location.href,
+                    "display": "standalone",
+                    "background_color": "#1a7d56",
+                    "theme_color": "#1a7d56",
+                    "description": "Portal Monitoring Hafalan & Absensi Santri",
+                    "icons": [
+                        {
+                            "src": appConfig && appConfig.logoUrl && appConfig.logoUrl.length > 20 ? appConfig.logoUrl : "https://cdn-icons-png.flaticon.com/512/3652/3652191.png",
+                            "sizes": "512x512",
+                            "type": "image/png",
+                            "purpose": "any maskable"
+                        }
+                    ]
+                };
+                var blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+                var oldLink = document.querySelector('link[rel="manifest"]');
+                if (oldLink) document.head.removeChild(oldLink);
+                var link = document.createElement('link');
+                link.rel = 'manifest';
+                link.href = URL.createObjectURL(blob);
+                document.head.appendChild(link);
+            } catch (e) {
+                console.log("Error create manifest:", e);
+            }
+
+            if ('serviceWorker' in navigator) {
+                try {
+                    var swCode = `
+                        self.addEventListener('install', function(e) { self.skipWaiting(); });
+                        self.addEventListener('activate', function(e) { e.waitUntil(self.clients.claim()); });
+                        self.addEventListener('fetch', function(e) {
+                            e.respondWith(fetch(e.request).catch(function() { return new Response('Offline Mode'); }));
+                        });
+                    `;
+                    var swBlob = new Blob([swCode], { type: 'application/javascript' });
+                    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(function(e) {});
+                } catch(e) {}
+            }
+
+            window.addEventListener('beforeinstallprompt', function (e) {
+                e.preventDefault();
+                deferredPrompt = e;
+                tampilkanTombolPWA();
+            });
+
+            window.addEventListener('appinstalled', function () {
+                sembunyikanTombolPWA();
+            });
+
+            tampilkanTombolPWA();
+        }
+
+        function tampilkanTombolPWA() {
+            var btns = document.querySelectorAll('.btn-install-pwa');
+            btns.forEach(function(b) { b.classList.remove('hidden'); });
+        }
+
+        function sembunyikanTombolPWA() {
+            var btns = document.querySelectorAll('.btn-install-pwa');
+            btns.forEach(function(b) { b.classList.add('hidden'); });
+        }
+
+        function mulaiInstallPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function (choiceResult) {
+                    if (choiceResult.outcome === 'accepted') {
+                        sembunyikanTombolPWA();
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                tampilkanModalPWA();
+            }
+        }
+
+        function tampilkanModalPWA() {
+            var modal = document.getElementById('modal-pwa');
+            var content = document.getElementById('pwa-guide-content');
+            if (!modal || !content) return;
+
+            var ua = navigator.userAgent.toLowerCase();
+            var isIOS = /iphone|ipad|ipod/.test(ua);
+            var isAndroid = /android/.test(ua);
+
+            var html = '';
+            if (isIOS) {
+                html = `
+                    <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200/60 mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-[#1a7d56] block mb-1">Panduan untuk iPhone / iPad (iOS)</span>
+                        <p class="text-xs text-slate-600">Safari memiliki cara khusus untuk menambahkan aplikasi ke layar utama:</p>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2.5 text-slate-700 font-medium text-sm">
+                        <li>Tekan tombol <span class="font-bold text-[#1a7d56]">Bagikan (Share) <i class="fa-solid fa-share-from-square"></i></span> di bagian bawah layar browser Safari Anda.</li>
+                        <li>Gulir menu ke bawah lalu pilih <span class="font-bold text-[#1a7d56]">"Tambahkan ke Layar Utama" (Add to Home Screen)</span>.</li>
+                        <li>Tekan <span class="font-bold">Tambah (Add)</span> di pojok kanan atas.</li>
+                    </ol>
+                `;
+            } else if (isAndroid) {
+                html = `
+                    <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200/60 mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-[#1a7d56] block mb-1">Panduan untuk Android (HP / Tablet)</span>
+                        <p class="text-xs text-slate-600">Ikuti 2 langkah mudah berikut di browser Chrome / Internet Anda:</p>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2.5 text-slate-700 font-medium text-sm">
+                        <li>Ketuk ikon <span class="font-bold text-[#1a7d56]">Tiga Titik <i class="fa-solid fa-ellipsis-vertical"></i></span> di pojok kanan atas browser Anda.</li>
+                        <li>Pilih opsi <span class="font-bold text-[#1a7d56]">"Tambahkan ke Layar Utama" (Add to Home Screen)</span> atau <span class="font-bold text-[#1a7d56]">"Install Aplikasi"</span>.</li>
+                        <li>Konfirmasi dengan menekan <span class="font-bold">Install</span> atau <span class="font-bold">Tambah</span>.</li>
+                    </ol>
+                `;
+            } else {
+                html = `
+                    <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200/60 mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-[#1a7d56] block mb-1">Panduan untuk PC / Laptop (Windows / Mac)</span>
+                        <p class="text-xs text-slate-600">Untuk Google Chrome / Microsoft Edge di komputer Anda:</p>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2.5 text-slate-700 font-medium text-sm">
+                        <li>Klik ikon <span class="font-bold text-[#1a7d56]">Tiga Titik <i class="fa-solid fa-ellipsis-vertical"></i></span> atau ikon <span class="font-bold text-[#1a7d56]">Install <i class="fa-solid fa-display"></i></span> di sebelah kanan bilah alamat (address bar) browser.</li>
+                        <li>Pilih <span class="font-bold text-[#1a7d56]">"Install Aplikasi ini..."</span> atau <span class="font-bold text-[#1a7d56]">"Simpan dan Bagikan &rarr; Buat Pintasan (Create Shortcut)"</span>.</li>
+                        <li>Centang opsi <span class="font-bold">"Buka sebagai jendela" (Open as window)</span> jika ada, lalu klik <span class="font-bold">Buat / Install</span>.</li>
+                    </ol>
+                `;
+            }
+
+            content.innerHTML = html;
+            modal.classList.remove('hidden');
+            setTimeout(function() {
+                modal.classList.remove('opacity-0');
+                var card = document.getElementById('modal-pwa-card');
+                if (card) card.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function tutupModalPWA() {
+            var modal = document.getElementById('modal-pwa');
+            var card = document.getElementById('modal-pwa-card');
+            if (!modal) return;
+            modal.classList.add('opacity-0');
+            if (card) card.classList.add('scale-95');
+            setTimeout(function() {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+    </script>
+
+    <!-- MODAL PANDUAN INSTALL PWA -->
+    <div id="modal-pwa" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl overflow-hidden transform transition-transform duration-300 scale-95" id="modal-pwa-card">
+            <div class="flex justify-between items-center pb-4 border-b border-slate-100 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-[#1a7d56] flex items-center justify-center text-lg font-bold shadow-sm">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg">Install Aplikasi</h3>
+                        <p class="text-xs text-slate-400">Akses lebih cepat & praktis</p>
+                    </div>
+                </div>
+                <button type="button" onclick="tutupModalPWA()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-red-500 flex items-center justify-center font-bold transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4 my-2 text-sm text-slate-600" id="pwa-guide-content">
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-center">
+                <button type="button" onclick="tutupModalPWA()" class="w-full bg-[#1a7d56] text-white hover:bg-emerald-700 py-3 rounded-xl font-bold text-sm shadow-lg shadow-emerald-600/30 transition active:scale-95 flex items-center justify-center">
+                    <i class="fa-solid fa-check-circle mr-1.5"></i> Saya Mengerti & Siap Install
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
