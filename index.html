@@ -5,6 +5,7 @@
     <base target="_top">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal Wali Santri</title>
+    <link rel="manifest" href="/manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -524,6 +525,14 @@
         }
 
         function loadAppConfig() {
+            if (typeof google === 'undefined' || !google.script) {
+                appConfig = { appName: "Portal Wali Santri", logoUrl: "/Hidayatullah.png" };
+                var titleEl = document.getElementById('appTitle');
+                if (titleEl) titleEl.innerText = appConfig.appName;
+                var dashTitleEl = document.getElementById('dashAppTitle');
+                if (dashTitleEl) dashTitleEl.innerText = appConfig.appName;
+                return;
+            }
             google.script.run.withSuccessHandler(function (config) {
                 appConfig = config;
                 if (config.appName) {
@@ -1124,47 +1133,53 @@
                 return;
             }
 
-            try {
-                var manifestObj = {
-                    "name": appConfig ? (appConfig.appName || "Portal Wali Santri") : "Portal Wali Santri",
-                    "short_name": "Portal Wali",
-                    "start_url": window.location.href,
-                    "display": "standalone",
-                    "background_color": "#1a7d56",
-                    "theme_color": "#1a7d56",
-                    "description": "Portal Monitoring Hafalan & Absensi Santri",
-                    "icons": [
-                        {
-                            "src": appConfig && appConfig.logoUrl && appConfig.logoUrl.length > 20 ? appConfig.logoUrl : "https://cdn-icons-png.flaticon.com/512/3652/3652191.png",
-                            "sizes": "512x512",
-                            "type": "image/png",
-                            "purpose": "any maskable"
-                        }
-                    ]
-                };
-                var blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
-                var oldLink = document.querySelector('link[rel="manifest"]');
-                if (oldLink) document.head.removeChild(oldLink);
-                var link = document.createElement('link');
-                link.rel = 'manifest';
-                link.href = URL.createObjectURL(blob);
-                document.head.appendChild(link);
-            } catch (e) {
-                console.log("Error create manifest:", e);
-            }
-
-            if ('serviceWorker' in navigator) {
+            if (typeof google === 'undefined' || !google.script) {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function(e) {});
+                }
+            } else {
                 try {
-                    var swCode = `
-                        self.addEventListener('install', function(e) { self.skipWaiting(); });
-                        self.addEventListener('activate', function(e) { e.waitUntil(self.clients.claim()); });
-                        self.addEventListener('fetch', function(e) {
-                            e.respondWith(fetch(e.request).catch(function() { return new Response('Offline Mode'); }));
-                        });
-                    `;
-                    var swBlob = new Blob([swCode], { type: 'application/javascript' });
-                    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(function(e) {});
-                } catch(e) {}
+                    var manifestObj = {
+                        "name": appConfig ? (appConfig.appName || "Portal Wali Santri") : "Portal Wali Santri",
+                        "short_name": "Portal Wali",
+                        "start_url": window.location.href,
+                        "display": "standalone",
+                        "background_color": "#1a7d56",
+                        "theme_color": "#1a7d56",
+                        "description": "Portal Monitoring Hafalan & Absensi Santri",
+                        "icons": [
+                            {
+                                "src": appConfig && appConfig.logoUrl && appConfig.logoUrl.length > 20 ? appConfig.logoUrl : "https://cdn-icons-png.flaticon.com/512/3652/3652191.png",
+                                "sizes": "512x512",
+                                "type": "image/png",
+                                "purpose": "any maskable"
+                            }
+                        ]
+                    };
+                    var blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+                    var oldLink = document.querySelector('link[rel="manifest"]');
+                    if (oldLink) document.head.removeChild(oldLink);
+                    var link = document.createElement('link');
+                    link.rel = 'manifest';
+                    link.href = URL.createObjectURL(blob);
+                    document.head.appendChild(link);
+                } catch (e) {
+                    console.log("Error create manifest:", e);
+                }
+
+                if ('serviceWorker' in navigator) {
+                    try {
+                        var swCode = `
+                            self.addEventListener('install', function(e) { self.skipWaiting(); });
+                            self.addEventListener('activate', function(e) { e.waitUntil(self.clients.claim()); });
+                            self.addEventListener('fetch', function(e) {
+                                e.respondWith(fetch(e.request).catch(function() { return new Response('Offline Mode'); }));
+                            });
+                        `;
+                        var swBlob = new Blob([swCode], { type: 'application/javascript' });
+                        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(function(e) {});
+                    } catch(e) {}
+                }
             }
 
             window.addEventListener('beforeinstallprompt', function (e) {

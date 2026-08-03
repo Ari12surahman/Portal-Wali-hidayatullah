@@ -1,20 +1,21 @@
 {
-  "name": "portal-wali",
-  "short_name": "portal",
-  "start_url": "Portal-Wali-hidayatullah.vercel.app",
+  "name": "Portal Wali Santri",
+  "short_name": "Portal Wali",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0d9488",
+  "background_color": "#1a7d56",
+  "theme_color": "#1a7d56",
+  "description": "Portal monitoring hafalan dan absensi santri Hidayatullah Tarakan",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "Portal-Wali-hidayatullah.vercel.app/Hidayatullah.png",
+      "src": "/Hidayatullah.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "Portal-Wali-hidayatullah.vercel.app/Hidayatullah.png",
+      "src": "/Hidayatullah.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
