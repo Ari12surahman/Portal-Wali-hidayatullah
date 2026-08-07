@@ -173,10 +173,30 @@
                 left: 100%;
             }
         }
+
+        /* Bottom Navigation */
+        .nav-item {
+            color: #94a3b8;
+            min-width: 60px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .nav-item.active {
+            color: #1a7d56;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .nav-item.active i {
+            transform: scale(1.15);
+        }
+
+        .page-view {
+            animation: fadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
     </style>
 </head>
 
-<body class="text-slate-800 select-none pb-10">
+<body class="text-slate-800 select-none">
 
     <!-- LOGIN PAGE -->
     <div id="page-login"
@@ -230,7 +250,7 @@
     </div>
 
     <!-- DASHBOARD PAGE -->
-    <div id="page-dashboard" class="hidden min-h-screen">
+    <div id="page-dashboard" class="hidden min-h-screen pb-24">
         <!-- Header -->
         <div
             class="bg-white/90 backdrop-blur-xl px-6 pt-12 pb-4 sticky top-0 z-30 flex justify-between items-center border-b border-slate-100 shadow-sm">
@@ -259,114 +279,287 @@
 
         <main class="p-5 w-full md:max-w-4xl lg:max-w-5xl mx-auto transition-all duration-300">
 
-            <!-- Hero Card -->
-            <div
-                class="bg-gradient-to-r from-[#1a7d56] via-emerald-600 to-teal-600 rounded-[2rem] p-6 text-white shadow-2xl shadow-emerald-600/30 mb-6 relative overflow-hidden">
-                <div class="absolute right-0 top-0 opacity-10 transform translate-x-4 -translate-y-4"><i
-                        class="fa-solid fa-quran text-9xl"></i></div>
-                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-white/5 rounded-full"></div>
-                <div class="flex justify-between items-end relative z-10">
-                    <div>
-                        <h3 id="dashAppTitle" class="text-emerald-100 text-xs font-bold uppercase tracking-wider mb-1">
-                            ...
-                        </h3>
-                        <p class="text-xl font-bold">Terus Semangat!</p>
-                        <p class="text-xs text-emerald-100 mt-2 opacity-80">Data diperbarui otomatis setiap 15 detik</p>
+            <!-- ==================== VIEW: BERANDA (Dashboard) ==================== -->
+            <div id="page-beranda" class="page-view">
+                <!-- Hero Card -->
+                <div
+                    class="bg-gradient-to-r from-[#1a7d56] via-emerald-600 to-teal-600 rounded-[2rem] p-6 text-white shadow-2xl shadow-emerald-600/30 mb-5 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 opacity-10 transform translate-x-4 -translate-y-4"><i
+                            class="fa-solid fa-mosque text-9xl"></i></div>
+                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-white/5 rounded-full"></div>
+                    <div class="flex justify-between items-end relative z-10">
+                        <div>
+                            <h3 id="dashAppTitle"
+                                class="text-emerald-100 text-xs font-bold uppercase tracking-wider mb-1">...</h3>
+                            <p class="text-xl font-bold mb-1">Assalamu'alaikum! 👋</p>
+                            <p class="text-sm text-emerald-100 opacity-80">Pantau perkembangan hafalan & kehadiran
+                                Ananda</p>
+                        </div>
+                        <button onclick="loadRiwayat(true)"
+                            class="bg-white/20 hover:bg-white/30 p-3 rounded-xl transition active:scale-90 backdrop-blur">
+                            <i class="fa-solid fa-arrows-rotate text-white"></i>
+                        </button>
                     </div>
-                    <button onclick="loadRiwayat(true)"
-                        class="bg-white/20 hover:bg-white/30 p-3 rounded-xl transition active:scale-90 backdrop-blur">
-                        <i class="fa-solid fa-arrows-rotate text-white"></i>
+                </div>
+
+                <!-- Info Ananda -->
+                <div class="glass-card rounded-[1.5rem] p-4 shadow-lg mb-4 border border-slate-100/60">
+                    <h4
+                        class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <i class="fa-solid fa-id-card text-[#1a7d56]"></i> Informasi Ananda
+                    </h4>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="bg-slate-50 rounded-xl p-2.5 text-center border border-slate-100">
+                            <p class="text-[9px] font-bold text-slate-400 uppercase">Kelas</p>
+                            <p id="dashKelas" class="font-black text-slate-800 text-sm mt-0.5">-</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-2.5 text-center border border-slate-100">
+                            <p class="text-[9px] font-bold text-slate-400 uppercase">Musyrif</p>
+                            <p id="dashMusyrif" class="font-black text-slate-800 text-sm mt-0.5 truncate">-</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-2.5 text-center border border-slate-100">
+                            <p class="text-[9px] font-bold text-slate-400 uppercase">Target</p>
+                            <p id="dashTarget" class="font-black text-[#1a7d56] text-sm mt-0.5 truncate">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Grid -->
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <!-- Hafalan Progress Mini -->
+                    <button onclick="switchPage('hafalan')"
+                        class="glass-card rounded-[1.5rem] p-4 shadow-lg text-left border border-emerald-100/60 hover:shadow-xl transition active:scale-[0.98]">
+                        <div class="flex items-center gap-2 mb-2.5">
+                            <span
+                                class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-[#1a7d56] text-white flex items-center justify-center shadow-md shadow-emerald-500/30"><i
+                                    class="fa-solid fa-book-quran text-sm"></i></span>
+                            <span class="text-[11px] font-bold text-slate-500">Hafalan</span>
+                        </div>
+                        <p id="dashPersen" class="text-3xl font-black text-[#1a7d56] leading-none">0%</p>
+                        <div class="w-full h-2 bg-slate-100 rounded-full mt-2.5 overflow-hidden">
+                            <div id="dashProgressBar"
+                                class="h-full bg-gradient-to-r from-[#1a7d56] to-emerald-400 rounded-full transition-all duration-700"
+                                style="width:0%"></div>
+                        </div>
+                        <p id="dashStatusText" class="text-[10px] font-bold text-slate-400 mt-1.5">Memuat...</p>
+                    </button>
+
+                    <!-- Absensi Mini -->
+                    <button onclick="switchPage('absensi')"
+                        class="glass-card rounded-[1.5rem] p-4 shadow-lg text-left border border-teal-100/60 hover:shadow-xl transition active:scale-[0.98]">
+                        <div class="flex items-center gap-2 mb-2.5">
+                            <span
+                                class="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 text-white flex items-center justify-center shadow-md shadow-teal-500/30"><i
+                                    class="fa-solid fa-user-check text-sm"></i></span>
+                            <span class="text-[11px] font-bold text-slate-500">Kehadiran</span>
+                        </div>
+                        <p id="dashTotalAbsen" class="text-3xl font-black text-teal-600 leading-none">0</p>
+                        <p class="text-[10px] font-bold text-slate-400 mt-1.5 mb-2">Total Pertemuan</p>
+                        <div class="flex gap-1 flex-wrap">
+                            <span
+                                class="text-[9px] font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100">H:<span
+                                    id="dashH">0</span></span>
+                            <span
+                                class="text-[9px] font-extrabold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-100">S:<span
+                                    id="dashS">0</span></span>
+                            <span
+                                class="text-[9px] font-extrabold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded-md border border-blue-100">I:<span
+                                    id="dashI">0</span></span>
+                            <span
+                                class="text-[9px] font-extrabold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-100">A:<span
+                                    id="dashA">0</span></span>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Setoran Terakhir -->
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-bold text-sm text-slate-700 flex items-center gap-2">
+                            <i class="fa-solid fa-clock text-[#1a7d56]"></i> Setoran Terakhir
+                        </h4>
+                        <button onclick="switchPage('riwayat')"
+                            class="text-[11px] font-bold text-[#1a7d56] hover:underline flex items-center gap-1">
+                            Lihat Semua <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                        </button>
+                    </div>
+                    <div id="dashLastSetoran" class="space-y-2.5">
+                        <p class="text-center text-slate-300 py-8 text-sm"><i
+                                class="fa-solid fa-spinner fa-spin"></i> Memuat...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== VIEW: HAFALAN (Target & Progres) ==================== -->
+            <div id="page-hafalan" class="hidden page-view">
+                <div id="sectionProgresWali">
+                    <div
+                        class="glass-card p-5 rounded-[1.8rem] shadow-xl border border-emerald-100/60 relative overflow-hidden mb-4">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span
+                                    class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[11px] font-extrabold px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5">
+                                    <i class="fa-solid fa-bullseye text-emerald-200"></i> TARGET HAFALAN ANANDA
+                                </span>
+                                <span id="badgeStatusTarget"
+                                    class="px-2.5 py-1 rounded-full text-xs font-black tracking-wide uppercase bg-slate-100 text-slate-500 shadow-inner">
+                                    <i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat...
+                                </span>
+                            </div>
+                            <h4 id="dispTargetWali"
+                                class="text-lg md:text-xl font-black text-slate-800 tracking-tight leading-tight mb-2">
+                                <i class="fa-solid fa-spinner fa-spin text-[#1a7d56]"></i> Memuat Target...
+                            </h4>
+                            <div
+                                class="flex items-center justify-between text-xs font-bold text-slate-600 mb-1.5 mt-3">
+                                <span class="flex items-center gap-1"><i
+                                        class="fa-solid fa-trophy text-amber-500"></i> Progres Tercapai: <span
+                                        id="dispTercapaiWali"
+                                        class="text-emerald-700 font-extrabold">...</span></span>
+                                <span id="dispPersenWali" class="text-sm font-black text-[#1a7d56]">0%</span>
+                            </div>
+                            <div
+                                class="w-full h-3.5 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200 shadow-inner mb-3">
+                                <div id="progressBarWali"
+                                    class="h-full bg-gradient-to-r from-[#1a7d56] via-emerald-500 to-teal-400 rounded-full transition-all duration-700 shadow-md"
+                                    style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div
+                            class="pt-3 border-t border-slate-100/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                            <span id="dispSisaWali"
+                                class="text-slate-600 font-semibold bg-emerald-50/70 px-3 py-1.5 rounded-xl border border-emerald-100/60 inline-flex items-center gap-1.5">
+                                <i class="fa-solid fa-chart-line text-[#1a7d56]"></i> Menghitung sisa target...
+                            </span>
+                            <div class="flex items-center gap-3 text-slate-500 text-[11px] font-semibold">
+                                <span><i class="fa-solid fa-layer-group text-slate-400"></i> Kelas: <b
+                                        id="dispKelasWali" class="text-slate-700">-</b></span>
+                                <span><i class="fa-solid fa-user-tie text-slate-400"></i> Musyrif: <b
+                                        id="dispMusyrifWali" class="text-slate-700">-</b></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button onclick="loadProgresWali(curNama)"
+                        class="bg-gradient-to-r from-[#1a7d56] to-emerald-500 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-lg shadow-emerald-500/30 active:scale-95 transition inline-flex items-center gap-2">
+                        <i class="fa-solid fa-arrows-rotate"></i> Refresh Data Hafalan
                     </button>
                 </div>
             </div>
 
-            <!-- SECTION MONITOR TARGET & PROGRES HAFALAN (REAL-TIME) -->
-            <div id="sectionProgresWali" class="mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Kartu Progres Hafalan Utama -->
-                    <div class="glass-card md:col-span-2 p-5 rounded-[1.8rem] shadow-xl border border-emerald-100/60 relative overflow-hidden flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between gap-2 mb-3">
-                                <span class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[11px] font-extrabold px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5">
-                                    <i class="fa-solid fa-bullseye text-emerald-200"></i> TARGET HAFALAN ANANDA
-                                </span>
-                                <span id="badgeStatusTarget" class="px-2.5 py-1 rounded-full text-xs font-black tracking-wide uppercase bg-slate-100 text-slate-500 shadow-inner">
-                                    <i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat...
-                                </span>
-                            </div>
-                            <h4 id="dispTargetWali" class="text-lg md:text-xl font-black text-slate-800 tracking-tight leading-tight mb-2">
-                                <i class="fa-solid fa-spinner fa-spin text-[#1a7d56]"></i> Memuat Target...
-                            </h4>
-                            <div class="flex items-center justify-between text-xs font-bold text-slate-600 mb-1.5 mt-3">
-                                <span class="flex items-center gap-1"><i class="fa-solid fa-trophy text-amber-500"></i> Progres Tercapai: <span id="dispTercapaiWali" class="text-emerald-700 font-extrabold">...</span></span>
-                                <span id="dispPersenWali" class="text-sm font-black text-[#1a7d56]">0%</span>
-                            </div>
-                            <div class="w-full h-3.5 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200 shadow-inner mb-3">
-                                <div id="progressBarWali" class="h-full bg-gradient-to-r from-[#1a7d56] via-emerald-500 to-teal-400 rounded-full transition-all duration-700 shadow-md" style="width: 0%;"></div>
-                            </div>
+            <!-- ==================== VIEW: ABSENSI ==================== -->
+            <div id="page-absensi" class="hidden page-view">
+                <!-- Rekap Absensi Cards -->
+                <div class="glass-card p-5 rounded-[1.8rem] shadow-xl border border-slate-100/60 mb-4">
+                    <h4 class="text-sm font-black text-slate-800 mb-3 flex items-center gap-2">
+                        <span
+                            class="w-7 h-7 rounded-xl bg-teal-500 text-white flex items-center justify-center text-xs shadow-md"><i
+                                class="fa-solid fa-user-check"></i></span>
+                        Rekap Absensi Ananda
+                    </h4>
+                    <div class="grid grid-cols-4 gap-2.5 my-2">
+                        <div
+                            class="bg-emerald-50/80 border border-emerald-200 p-3 rounded-2xl text-center hover:scale-[1.02] transition">
+                            <p class="text-[10px] uppercase font-extrabold text-emerald-600 tracking-wider">Hadir</p>
+                            <p id="absenH" class="text-2xl font-black text-emerald-700 mt-0.5">0</p>
                         </div>
-                        <div class="pt-3 border-t border-slate-100/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                            <span id="dispSisaWali" class="text-slate-600 font-semibold bg-emerald-50/70 px-3 py-1.5 rounded-xl border border-emerald-100/60 inline-flex items-center gap-1.5">
-                                <i class="fa-solid fa-chart-line text-[#1a7d56]"></i> Menghitung sisa target...
-                            </span>
-                            <div class="flex items-center gap-3 text-slate-500 text-[11px] font-semibold">
-                                <span><i class="fa-solid fa-layer-group text-slate-400"></i> Kelas: <b id="dispKelasWali" class="text-slate-700">-</b></span>
-                                <span><i class="fa-solid fa-user-tie text-slate-400"></i> Musyrif: <b id="dispMusyrifWali" class="text-slate-700">-</b></span>
-                            </div>
+                        <div
+                            class="bg-amber-50/80 border border-amber-200 p-3 rounded-2xl text-center hover:scale-[1.02] transition">
+                            <p class="text-[10px] uppercase font-extrabold text-amber-600 tracking-wider">Sakit</p>
+                            <p id="absenS" class="text-2xl font-black text-amber-700 mt-0.5">0</p>
+                        </div>
+                        <div
+                            class="bg-blue-50/80 border border-blue-200 p-3 rounded-2xl text-center hover:scale-[1.02] transition">
+                            <p class="text-[10px] uppercase font-extrabold text-blue-600 tracking-wider">Izin</p>
+                            <p id="absenI" class="text-2xl font-black text-blue-700 mt-0.5">0</p>
+                        </div>
+                        <div
+                            class="bg-rose-50/80 border border-rose-200 p-3 rounded-2xl text-center hover:scale-[1.02] transition">
+                            <p class="text-[10px] uppercase font-extrabold text-rose-600 tracking-wider">Alpa</p>
+                            <p id="absenA" class="text-2xl font-black text-rose-700 mt-0.5">0</p>
                         </div>
                     </div>
+                    <p
+                        class="text-[11px] text-slate-400 text-center font-semibold mt-3 pt-2 border-t border-slate-100">
+                        <i class="fa-solid fa-clock text-teal-500 mr-1"></i> Total pertemuan: <b id="absenTotal"
+                            class="text-slate-700">0</b>
+                    </p>
+                </div>
 
-                    <!-- Kartu Rekap Absensi Ananda -->
-                    <div class="glass-card p-5 rounded-[1.8rem] shadow-xl border border-slate-100/60 flex flex-col justify-between">
-                        <div>
-                            <h4 class="text-sm font-black text-slate-800 mb-3 flex items-center gap-2">
-                                <span class="w-7 h-7 rounded-xl bg-teal-500 text-white flex items-center justify-center text-xs shadow-md"><i class="fa-solid fa-user-check"></i></span>
-                                Rekap Absensi
-                            </h4>
-                            <div class="grid grid-cols-2 gap-2.5 my-2">
-                                <div class="bg-emerald-50/80 border border-emerald-200 p-2.5 rounded-2xl text-center hover:scale-[1.02] transition">
-                                    <p class="text-[10px] uppercase font-extrabold text-emerald-600 tracking-wider">Hadir</p>
-                                    <p id="absenH" class="text-xl font-black text-emerald-700 mt-0.5">0</p>
-                                </div>
-                                <div class="bg-amber-50/80 border border-amber-200 p-2.5 rounded-2xl text-center hover:scale-[1.02] transition">
-                                    <p class="text-[10px] uppercase font-extrabold text-amber-600 tracking-wider">Sakit</p>
-                                    <p id="absenS" class="text-xl font-black text-amber-700 mt-0.5">0</p>
-                                </div>
-                                <div class="bg-blue-50/80 border border-blue-200 p-2.5 rounded-2xl text-center hover:scale-[1.02] transition">
-                                    <p class="text-[10px] uppercase font-extrabold text-blue-600 tracking-wider">Izin</p>
-                                    <p id="absenI" class="text-xl font-black text-blue-700 mt-0.5">0</p>
-                                </div>
-                                <div class="bg-rose-50/80 border border-rose-200 p-2.5 rounded-2xl text-center hover:scale-[1.02] transition">
-                                    <p class="text-[10px] uppercase font-extrabold text-rose-600 tracking-wider">Alpa</p>
-                                    <p id="absenA" class="text-xl font-black text-rose-700 mt-0.5">0</p>
-                                </div>
-                            </div>
-                        </div>
-                        <p class="text-[11px] text-slate-400 text-center font-semibold mt-3 pt-2 border-t border-slate-100">
-                            <i class="fa-solid fa-clock text-teal-500 mr-1"></i> Total pertemuan: <b id="absenTotal" class="text-slate-700">0</b>
-                        </p>
+                <!-- Download Buttons Absensi -->
+                <div class="flex gap-2 mb-4">
+                    <button onclick="activeTab='absensi'; downloadPdfWali()"
+                        class="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white text-xs font-extrabold shadow-md shadow-rose-500/25 hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-pdf text-sm"></i> Download PDF
+                    </button>
+                    <button onclick="activeTab='absensi'; downloadExcelWali()"
+                        class="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 text-white text-xs font-extrabold shadow-md shadow-emerald-500/25 hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-excel text-sm"></i> Download Excel
+                    </button>
+                </div>
+
+                <!-- Absensi Table -->
+                <div class="glass-card rounded-[1.5rem] shadow-lg overflow-hidden">
+                    <div class="table-container hidden md:block">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+                                <tr>
+                                    <th
+                                        class="py-4 px-4 text-center font-bold text-slate-500 text-xs uppercase tracking-wider w-12">
+                                        No</th>
+                                    <th
+                                        class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">
+                                        Tanggal</th>
+                                    <th
+                                        class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">
+                                        Nama Kegiatan</th>
+                                    <th
+                                        class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">
+                                        Waktu / Jadwal</th>
+                                    <th
+                                        class="py-4 px-4 text-center font-bold text-slate-500 text-xs uppercase tracking-wider">
+                                        Status</th>
+                                    <th
+                                        class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">
+                                        Musyrif</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBodyAbsen" class="divide-y divide-slate-100">
+                                <tr>
+                                    <td colspan="6" class="text-center py-20 text-slate-300"><i
+                                            class="fa-solid fa-spinner fa-spin text-2xl"></i><br>Memuat Absensi...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="cardContainerAbsen" class="md:hidden divide-y divide-slate-100 p-3 bg-slate-50/50">
+                        <div class="text-center py-20 text-slate-300"><i
+                                class="fa-solid fa-spinner fa-spin text-2xl"></i><br>Memuat Absensi...</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Filter Section -->
-            <div class="mb-5">
+            <!-- ==================== VIEW: RIWAYAT (Hafalan History) ==================== -->
+            <div id="page-riwayat" class="hidden page-view">
+                <!-- Header + Download -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
                     <h3 class="font-bold text-xl text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-clock-rotate-left text-[#1a7d56]"></i> Riwayat & Laporan
+                        <i class="fa-solid fa-clock-rotate-left text-[#1a7d56]"></i> Riwayat Hafalan
                     </h3>
                     <div class="flex items-center gap-2">
-                        <button onclick="downloadPdfWali()"
+                        <button onclick="activeTab='hafalan'; downloadPdfWali()"
                             class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white text-xs font-extrabold shadow-md shadow-rose-500/25 hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-file-pdf text-sm"></i> Download PDF
                         </button>
-                        <button onclick="downloadExcelWali()"
+                        <button onclick="activeTab='hafalan'; downloadExcelWali()"
                             class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 text-white text-xs font-extrabold shadow-md shadow-emerald-500/25 hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-file-excel text-sm"></i> Download Excel
                         </button>
                     </div>
                 </div>
 
+                <!-- Filter -->
                 <div class="glass-card p-4 rounded-[1.5rem] shadow-lg mb-4">
                     <div class="flex gap-2 mb-3">
                         <div class="relative flex-1">
@@ -390,18 +583,8 @@
                     </div>
                 </div>
 
-                <!-- Tab Toggle -->
-                <div class="flex bg-slate-200 p-1 rounded-xl mb-4">
-                    <button onclick="switchTab('hafalan')" id="tabHafalan"
-                        class="flex-1 py-2 rounded-lg font-bold text-sm transition bg-white text-[#1a7d56] shadow-sm">Riwayat
-                        Hafalan</button>
-                    <button onclick="switchTab('absensi')" id="tabAbsensi"
-                        class="flex-1 py-2 rounded-lg font-bold text-sm transition text-slate-500 hover:text-slate-700">Riwayat
-                        Absensi</button>
-                </div>
-
-                <!-- Table Container HAFALAN -->
-                <div id="viewHafalan" class="glass-card rounded-[1.5rem] shadow-lg overflow-hidden">
+                <!-- Hafalan Table -->
+                <div class="glass-card rounded-[1.5rem] shadow-lg overflow-hidden">
                     <div class="table-container">
                         <table class="w-full text-sm">
                             <thead class="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
@@ -437,7 +620,7 @@
                             </thead>
                             <tbody id="tableBody" class="divide-y divide-slate-100">
                                 <tr>
-                                    <td colspan="8" class="text-center py-20 text-slate-300"><i
+                                    <td colspan="9" class="text-center py-20 text-slate-300"><i
                                             class="fa-solid fa-spinner fa-spin text-2xl"></i><br>Memuat Data...</td>
                                 </tr>
                             </tbody>
@@ -466,36 +649,35 @@
                 </div>
             </div>
 
-            <!-- Table Container ABSENSI -->
-            <div id="viewAbsensi" class="glass-card rounded-[1.5rem] shadow-lg overflow-hidden hidden">
-                <div class="table-container hidden md:block">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                            <tr>
-                                <th class="py-4 px-4 text-center font-bold text-slate-500 text-xs uppercase tracking-wider w-12">No</th>
-                                <th class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">Tanggal</th>
-                                <th class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">Nama Kegiatan</th>
-                                <th class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">Waktu / Jadwal</th>
-                                <th class="py-4 px-4 text-center font-bold text-slate-500 text-xs uppercase tracking-wider">Status</th>
-                                <th class="py-4 px-4 text-left font-bold text-slate-500 text-xs uppercase tracking-wider">Musyrif</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBodyAbsen" class="divide-y divide-slate-100">
-                            <tr>
-                                <td colspan="6" class="text-center py-20 text-slate-300"><i
-                                        class="fa-solid fa-spinner fa-spin text-2xl"></i><br>Memuat Absensi...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <!-- Tampilan Card Khusus HP (Mobile Responsive) agar rapi dan tidak berdempetan -->
-                <div id="cardContainerAbsen" class="md:hidden divide-y divide-slate-100 p-3 bg-slate-50/50">
-                    <div class="text-center py-20 text-slate-300"><i class="fa-solid fa-spinner fa-spin text-2xl"></i><br>Memuat Absensi...</div>
-                </div>
-            </div>
-    </div>
+        </main>
 
-    </main>
+        <!-- ==================== BOTTOM NAVIGATION ==================== -->
+        <nav id="bottomNav"
+            class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-slate-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+            <div class="max-w-lg mx-auto flex justify-around items-center h-16 px-1">
+                <button onclick="switchPage('beranda')" id="nav-beranda"
+                    class="nav-item active flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 rounded-xl">
+                    <i class="fa-solid fa-home text-lg"></i>
+                    <span class="text-[10px] font-bold leading-tight">Beranda</span>
+                </button>
+                <button onclick="switchPage('hafalan')" id="nav-hafalan"
+                    class="nav-item flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 rounded-xl">
+                    <i class="fa-solid fa-book-quran text-lg"></i>
+                    <span class="text-[10px] font-bold leading-tight">Hafalan</span>
+                </button>
+                <button onclick="switchPage('absensi')" id="nav-absensi"
+                    class="nav-item flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 rounded-xl">
+                    <i class="fa-solid fa-user-check text-lg"></i>
+                    <span class="text-[10px] font-bold leading-tight">Absensi</span>
+                </button>
+                <button onclick="switchPage('riwayat')" id="nav-riwayat"
+                    class="nav-item flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 rounded-xl">
+                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                    <span class="text-[10px] font-bold leading-tight">Riwayat</span>
+                </button>
+            </div>
+            <div style="height: env(safe-area-inset-bottom, 0px)"></div>
+        </nav>
     </div>
 
 
@@ -580,6 +762,7 @@
         var activeTab = 'hafalan';
         var infoAnanda = { kelas: '-', musyrif: '-', target: '-' };
         var appConfig = { appName: "Portal Wali Santri", logoUrl: "" };
+        var activeView = 'beranda';
         
         document.addEventListener('visibilitychange', function() {
             if (document.visibilityState === 'visible' && typeof curNama !== 'undefined' && curNama) {
@@ -688,6 +871,7 @@
             document.getElementById('page-login').style.display = 'none';
             document.getElementById('page-dashboard').classList.remove('hidden');
             document.getElementById('dispNama').innerText = nama;
+            switchPage('beranda');
             setFilterHari('today');
             loadProgresWali(nama);
 
@@ -739,6 +923,7 @@
                 allData = arr || [];
                 currentPage = 1;
                 renderTable();
+                renderLastSetoran();
             }).getRiwayatAnak(curNama, tgl);
 
             // Load Absensi juga
@@ -750,30 +935,54 @@
             loadProgresWali(curNama);
         }
 
-        function switchTab(tabName) {
-            activeTab = tabName;
-            var btnHafalan = document.getElementById('tabHafalan');
-            var btnAbsensi = document.getElementById('tabAbsensi');
-            var viewHafalan = document.getElementById('viewHafalan');
-            var viewAbsensi = document.getElementById('viewAbsensi');
-
-            if (tabName === 'hafalan') {
-                btnHafalan.classList.add('bg-white', 'text-[#1a7d56]', 'shadow-sm');
-                btnHafalan.classList.remove('text-slate-500');
-                btnAbsensi.classList.remove('bg-white', 'text-[#1a7d56]', 'shadow-sm');
-                btnAbsensi.classList.add('text-slate-500');
-
-                viewHafalan.classList.remove('hidden');
-                viewAbsensi.classList.add('hidden');
-            } else {
-                btnAbsensi.classList.add('bg-white', 'text-[#1a7d56]', 'shadow-sm');
-                btnAbsensi.classList.remove('text-slate-500');
-                btnHafalan.classList.remove('bg-white', 'text-[#1a7d56]', 'shadow-sm');
-                btnHafalan.classList.add('text-slate-500');
-
-                viewAbsensi.classList.remove('hidden');
-                viewHafalan.classList.add('hidden');
+        // --- NAVIGASI HALAMAN (BOTTOM NAV) ---
+        function switchPage(viewName) {
+            activeView = viewName;
+            var views = ['beranda', 'hafalan', 'absensi', 'riwayat'];
+            views.forEach(function(v) {
+                var el = document.getElementById('page-' + v);
+                if (el) { el.classList.add('hidden'); el.classList.remove('page-view'); }
+                var nav = document.getElementById('nav-' + v);
+                if (nav) nav.classList.remove('active');
+            });
+            var selected = document.getElementById('page-' + viewName);
+            if (selected) {
+                selected.classList.remove('hidden');
+                void selected.offsetWidth;
+                selected.classList.add('page-view');
             }
+            var selectedNav = document.getElementById('nav-' + viewName);
+            if (selectedNav) selectedNav.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- RENDER SETORAN TERAKHIR DI DASHBOARD ---
+        function renderLastSetoran() {
+            var container = document.getElementById('dashLastSetoran');
+            if (!container) return;
+            if (!allData || allData.length === 0) {
+                container.innerHTML = '<div class="glass-card rounded-2xl p-6 text-center text-slate-300 border border-slate-100/60"><i class="fa-solid fa-box-open text-3xl mb-2 block"></i><span class="text-sm font-medium">Belum ada data setoran</span></div>';
+                return;
+            }
+            var last3 = allData.slice(0, 3);
+            var html = '';
+            last3.forEach(function(x) {
+                var nilaiColor = x.nilai == 'A' ? 'emerald' : (x.nilai == 'B' ? 'amber' : 'rose');
+                var halCol = '';
+                if (x.halAwal && x.halAwal != '-') {
+                    halCol = 'Hal ' + x.halAwal;
+                    if (x.halAkhir && x.halAkhir != '-' && x.halAkhir != x.halAwal) halCol += '-' + x.halAkhir;
+                }
+                html += '<div class="glass-card rounded-2xl p-4 shadow-sm border border-slate-100/60 flex items-center gap-3.5">' +
+                    '<div class="w-11 h-11 rounded-xl bg-' + nilaiColor + '-100 text-' + nilaiColor + '-600 flex items-center justify-center font-black text-lg border border-' + nilaiColor + '-200 shrink-0">' + x.nilai + '</div>' +
+                    '<div class="flex-1 min-w-0">' +
+                    '<p class="font-bold text-slate-800 text-sm truncate">' + x.surat + '</p>' +
+                    '<p class="text-[11px] text-slate-400 font-medium">' + x.jenis + ' \u00B7 ' + x.waktu + (halCol ? ' \u00B7 ' + halCol : '') + '</p>' +
+                    '</div>' +
+                    '<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold shrink-0 ' + (x.jenis === 'Ziyadah' ? 'bg-blue-100 text-blue-600' : 'bg-purple-100 text-purple-600') + '">' + x.jenis + '</span>' +
+                    '</div>';
+            });
+            container.innerHTML = html;
         }
 
         function renderTable() {
@@ -1058,12 +1267,32 @@
                     badge.innerText = st;
                 }
 
+                // Update dashboard mini elements
+                var dashPersen = document.getElementById('dashPersen');
+                if (dashPersen) dashPersen.innerText = Math.round(prog.persen || 0) + '%';
+                var dashBar = document.getElementById('dashProgressBar');
+                if (dashBar) dashBar.style.width = Math.min(100, Math.max(0, prog.persen || 0)) + '%';
+                var dashStatusEl = document.getElementById('dashStatusText');
+                if (dashStatusEl) dashStatusEl.innerText = st;
+                var dashKelas = document.getElementById('dashKelas');
+                if (dashKelas) dashKelas.innerText = prog.kelas || '-';
+                var dashMusyrif = document.getElementById('dashMusyrif');
+                if (dashMusyrif) dashMusyrif.innerText = prog.musyrif || '-';
+                var dashTarget = document.getElementById('dashTarget');
+                if (dashTarget) dashTarget.innerText = prog.targetDisplay || '-';
+
                 if (prog.absensi) {
                     var elH = document.getElementById('absenH'); if (elH) elH.innerText = prog.absensi.H || 0;
                     var elS = document.getElementById('absenS'); if (elS) elS.innerText = prog.absensi.S || 0;
                     var elI = document.getElementById('absenI'); if (elI) elI.innerText = prog.absensi.I || 0;
                     var elA = document.getElementById('absenA'); if (elA) elA.innerText = prog.absensi.A || 0;
                     var elTot = document.getElementById('absenTotal'); if (elTot) elTot.innerText = prog.absensi.total || 0;
+                    // Dashboard mini absensi
+                    var dH = document.getElementById('dashH'); if (dH) dH.innerText = prog.absensi.H || 0;
+                    var dS = document.getElementById('dashS'); if (dS) dS.innerText = prog.absensi.S || 0;
+                    var dI = document.getElementById('dashI'); if (dI) dI.innerText = prog.absensi.I || 0;
+                    var dA = document.getElementById('dashA'); if (dA) dA.innerText = prog.absensi.A || 0;
+                    var dTot = document.getElementById('dashTotalAbsen'); if (dTot) dTot.innerText = prog.absensi.total || 0;
                 }
             }).getProgresDanTargetWali(nama);
         }
