@@ -1239,12 +1239,6 @@
                 }
             }
 
-            window.addEventListener('beforeinstallprompt', function (e) {
-                e.preventDefault();
-                deferredPrompt = e;
-                tampilkanTombolPWA();
-            });
-
             window.addEventListener('appinstalled', function () {
                 sembunyikanTombolPWA();
             });
@@ -1255,6 +1249,13 @@
                 tampilkanTombolPWA();
             }
         }
+
+        // MOVED TO GLOBAL SCOPE to prevent race condition with window.onload
+        window.addEventListener('beforeinstallprompt', function (e) {
+            e.preventDefault();
+            deferredPrompt = e;
+            tampilkanTombolPWA();
+        });
 
         function tampilkanTombolPWA() {
             var btns = document.querySelectorAll('.btn-install-pwa');
