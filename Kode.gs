@@ -177,7 +177,8 @@ function getAbsensiSantri(namaSantri, tglFilter) {
           tanggal: row[0],
           waktu: row[1],
           status: row[3], // H, S, I, A
-          musyrif: row[4]
+          musyrif: row[4],
+          catatan: row[5] || ""
         });
       }
     }

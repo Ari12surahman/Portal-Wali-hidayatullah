@@ -1137,6 +1137,16 @@
             renderTableAbsen();
         }
 
+        function tampilkanCatatanAbsensi(catatan) {
+            Swal.fire({
+                title: 'Catatan / Alasan',
+                text: catatan,
+                icon: 'info',
+                confirmButtonColor: '#3b82f6',
+                confirmButtonText: 'Tutup'
+            });
+        }
+
         function renderTableAbsen() {
             var tbody = document.getElementById('tableBodyAbsen');
             var cardContainer = document.getElementById('cardContainerAbsen');
@@ -1193,6 +1203,9 @@
                 var kw = parseKegiatanDanWaktu(x.waktu);
                 var originalIdx = allAbsen.indexOf(x);
 
+                var cNotesSafe = (x.catatan || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                var iconCatatan = x.catatan ? `<button onclick="tampilkanCatatanAbsensi('${cNotesSafe}')" class="ml-2 w-6 h-6 bg-blue-50 text-blue-600 rounded flex items-center justify-center hover:bg-blue-500 hover:text-white transition shadow-sm inline-flex" title="Lihat Catatan"><i class="fa-solid fa-circle-info text-[10px]"></i></button>` : '';
+
                 // Desktop Table Row
                 htmlTable += `
                 <tr class="hover:bg-slate-50 transition border-b border-slate-50 last:border-0">
@@ -1208,8 +1221,9 @@
                             <i class="fa-regular fa-clock text-amber-500"></i> ${kw.waktu}
                         </span>
                     </td>
-                    <td class="py-3 px-4 text-center">
+                    <td class="py-3 px-4 text-center flex items-center justify-center">
                         <span class="px-3 py-1 rounded-full text-xs font-black bg-${color}-500 text-white shadow-sm shadow-${color}-500/30">${st.toUpperCase()}</span>
+                        ${iconCatatan}
                     </td>
                     <td class="py-3 px-4 text-slate-500 font-semibold text-xs"><i class="fa-solid fa-user-tie mr-1 text-slate-400"></i>${x.musyrif || '-'}</td>
                 </tr>
@@ -1223,7 +1237,10 @@
                             <p class="text-[10px] font-bold text-teal-600 uppercase tracking-wider flex items-center gap-1 mb-0.5"><i class="fa-solid fa-calendar-check text-teal-500"></i> NAMA KEGIATAN</p>
                             <h4 class="text-base font-black text-slate-800 leading-tight">${kw.kegiatan}</h4>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-black bg-${color}-500 text-white shadow-md shadow-${color}-500/30 shrink-0">${st.toUpperCase()}</span>
+                        <div class="flex items-center gap-1">
+                            ${iconCatatan}
+                            <span class="px-3 py-1 rounded-full text-xs font-black bg-${color}-500 text-white shadow-md shadow-${color}-500/30 shrink-0">${st.toUpperCase()}</span>
+                        </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100/80">
