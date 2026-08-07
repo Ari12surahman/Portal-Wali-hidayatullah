@@ -1190,7 +1190,8 @@
                 return;
             }
 
-            if (typeof google === 'undefined' || !google.script) {
+            var isAppsScript = window.location.hostname.includes("googleusercontent.com");
+            if (!isAppsScript) {
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function(e) {});
                 }
