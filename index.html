@@ -1204,7 +1204,7 @@
                 var kw = parseKegiatanDanWaktu(x.waktu);
                 var originalIdx = allAbsen.indexOf(x);
 
-                var cNotesSafe = (x.catatan || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                var cNotesSafe = String(x.catatan || '').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n').replace(/\r/g, '');
                 var iconCatatan = x.catatan ? `<button onclick="tampilkanCatatanAbsensi('${cNotesSafe}')" class="ml-2 w-6 h-6 bg-blue-50 text-blue-600 rounded flex items-center justify-center hover:bg-blue-500 hover:text-white transition shadow-sm inline-flex" title="Lihat Catatan"><i class="fa-solid fa-circle-info text-[10px]"></i></button>` : '';
 
                 // Desktop Table Row
