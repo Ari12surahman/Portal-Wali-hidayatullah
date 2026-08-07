@@ -502,7 +502,7 @@
 
     <script>
         // --- API BRIDGE VERCEL MOCK ---
-        var WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwlexN9SO-3WRWROcrPNBxErspQ-dAhXN6sJ4uRkJpn4EHZh3_rd3EU2oHTMQ79SI3AYA/exec"; // MASUKKAN URL GOOGLE APPS SCRIPT WEB APP DI SINI NANTI
+        var WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwlexN9SO-3WRWROcrPNBxErspQ-dAhXN6sJ4uRkJpn4EHZh3_rd3EU2oHTMQ79SI3AYA/exec";
         if (typeof google === 'undefined') { window.google = {}; }
         if (!google.script) { google.script = {}; }
         if (!google.script.run || google.script.run.__isMock) {
@@ -523,21 +523,33 @@
                                 return;
                             }
                             var payload = { func: prop, args: args };
+                            console.log("[API Bridge] Memanggil: " + prop, args);
                             fetch(WEB_APP_URL, {
                                 method: 'POST',
-                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                                body: JSON.stringify(payload)
+                                body: JSON.stringify(payload),
+                                redirect: 'follow'
                             })
-                            .then(function(res) { return res.json(); })
                             .then(function(res) {
+                                return res.text();
+                            })
+                            .then(function(text) {
+                                console.log("[API Bridge] Response untuk " + prop + ":", text.substring(0, 200));
+                                if (text.trim().charAt(0) !== '{' && text.trim().charAt(0) !== '[') {
+                                    throw new Error("Server tidak mengembalikan JSON. Response: " + text.substring(0, 100));
+                                }
+                                var res = JSON.parse(text);
                                 if (res.status === 'success' && successHandler) successHandler(res.data);
                                 else if (res.status === 'error' && failureHandler) failureHandler(res.message);
+                                else if (res.status === 'error') {
+                                    console.error("[API Bridge] Error dari server:", res.message);
+                                }
                             })
                             .catch(function(err) {
+                                console.error("[API Bridge] Fetch error untuk " + prop + ":", err);
                                 if (failureHandler) {
                                     failureHandler(err.toString());
                                 } else {
-                                    alert("Error: Gagal menghubungi server Apps Script. Pastikan Anda telah men-deploy Kode.gs terbaru dengan akses 'Siapa saja' (Anyone). Detail: " + err.toString());
+                                    alert("Error: Gagal menghubungi server. Detail: " + err.toString());
                                     var btn = document.querySelector('button[type="submit"]');
                                     if (btn) { btn.innerHTML = 'MASUK'; btn.disabled = false; }
                                 }
