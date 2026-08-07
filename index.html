@@ -578,6 +578,13 @@
         var activeTab = 'hafalan';
         var infoAnanda = { kelas: '-', musyrif: '-', target: '-' };
         var appConfig = { appName: "Portal Wali Santri", logoUrl: "" };
+        
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible' && typeof curNama !== 'undefined' && curNama) {
+                if (typeof loadRiwayat === 'function') loadRiwayat(false);
+                if (typeof loadProgresWali === 'function') loadProgresWali(curNama);
+            }
+        });
 
         window.onload = function () {
             initPWAModule();
