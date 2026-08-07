@@ -1167,7 +1167,10 @@
 
             var filtered = allAbsen;
             if (filterAbsenStatus) {
-                filtered = allAbsen.filter(function(x) { return x.status === filterAbsenStatus; });
+                filtered = allAbsen.filter(function(x) {
+                    var s = (x.status || '').toString().trim().toUpperCase();
+                    return s.charAt(0) === filterAbsenStatus;
+                });
             }
 
             if (filtered.length === 0) {
