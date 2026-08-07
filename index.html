@@ -459,23 +459,23 @@
                         Rekap Absensi Ananda
                     </h4>
                     <div class="grid grid-cols-4 gap-2.5 my-2">
-                        <div
-                            class="bg-emerald-50/80 border border-emerald-200 p-3 rounded-2xl text-center hover:scale-[1.02] transition">
+                        <div id="cardAbsenH" onclick="toggleFilterAbsen('H')"
+                            class="bg-emerald-50/80 border border-emerald-200 p-3 rounded-2xl text-center hover:scale-[1.02] transition cursor-pointer">
                             <p class="text-[10px] uppercase font-extrabold text-emerald-600 tracking-wider">Hadir</p>
                             <p id="absenH" class="text-2xl font-black text-emerald-700 mt-0.5">0</p>
                         </div>
-                        <div
-                            class="bg-amber-50/80 border border-amber-200 p-3 rounded-2xl text-center hover:scale-[1.02] transition">
+                        <div id="cardAbsenS" onclick="toggleFilterAbsen('S')"
+                            class="bg-amber-50/80 border border-amber-200 p-3 rounded-2xl text-center hover:scale-[1.02] transition cursor-pointer">
                             <p class="text-[10px] uppercase font-extrabold text-amber-600 tracking-wider">Sakit</p>
                             <p id="absenS" class="text-2xl font-black text-amber-700 mt-0.5">0</p>
                         </div>
-                        <div
-                            class="bg-blue-50/80 border border-blue-200 p-3 rounded-2xl text-center hover:scale-[1.02] transition">
+                        <div id="cardAbsenI" onclick="toggleFilterAbsen('I')"
+                            class="bg-blue-50/80 border border-blue-200 p-3 rounded-2xl text-center hover:scale-[1.02] transition cursor-pointer">
                             <p class="text-[10px] uppercase font-extrabold text-blue-600 tracking-wider">Izin</p>
                             <p id="absenI" class="text-2xl font-black text-blue-700 mt-0.5">0</p>
                         </div>
-                        <div
-                            class="bg-rose-50/80 border border-rose-200 p-3 rounded-2xl text-center hover:scale-[1.02] transition">
+                        <div id="cardAbsenA" onclick="toggleFilterAbsen('A')"
+                            class="bg-rose-50/80 border border-rose-200 p-3 rounded-2xl text-center hover:scale-[1.02] transition cursor-pointer">
                             <p class="text-[10px] uppercase font-extrabold text-rose-600 tracking-wider">Alpa</p>
                             <p id="absenA" class="text-2xl font-black text-rose-700 mt-0.5">0</p>
                         </div>
@@ -536,6 +536,14 @@
                     <div id="cardContainerAbsen" class="md:hidden divide-y divide-slate-100 p-3 bg-slate-50/50">
                         <div class="text-center py-20 text-slate-300"><i
                                 class="fa-solid fa-spinner fa-spin text-2xl"></i><br>Memuat Absensi...</div>
+                    </div>
+                    
+                    <!-- Load More Button -->
+                    <div id="loadMoreAbsenContainer" class="bg-slate-50 px-4 py-3 text-center border-t border-slate-200 hidden">
+                        <button onclick="loadMoreAbsen()"
+                            class="px-5 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-100 transition shadow-sm active:scale-95">
+                            <i class="fa-solid fa-chevron-down mr-1"></i> Tampilkan Lebih Banyak
+                        </button>
                     </div>
                 </div>
             </div>
@@ -756,6 +764,8 @@
         var curNama = null;
         var autoRefreshInterval = null;
         var allData = [];
+        var filterAbsenStatus = null;
+        var limitAbsen = 5;
         var allAbsen = [];
         var currentPage = 1;
         var itemsPerPage = 10;
@@ -1112,29 +1122,78 @@
             return { kegiatan: kegiatan || '-', waktu: jam || '-' };
         }
 
+        function toggleFilterAbsen(status) {
+            if (filterAbsenStatus === status) {
+                filterAbsenStatus = null;
+            } else {
+                filterAbsenStatus = status;
+            }
+            limitAbsen = 5;
+            renderTableAbsen();
+        }
+
+        function loadMoreAbsen() {
+            limitAbsen += 5;
+            renderTableAbsen();
+        }
+
         function renderTableAbsen() {
             var tbody = document.getElementById('tableBodyAbsen');
             var cardContainer = document.getElementById('cardContainerAbsen');
+            var lmBtn = document.getElementById('loadMoreAbsenContainer');
+
+            // Set styling for active filter card
+            var cards = ['H', 'S', 'I', 'A'];
+            cards.forEach(function(c) {
+                var el = document.getElementById('cardAbsen' + c);
+                if (el) {
+                    el.className = el.className.replace(/ring-2 ring-offset-2 ring-\w+-400/g, '').trim();
+                    if (filterAbsenStatus === c) {
+                        el.classList.add('ring-2', 'ring-offset-2');
+                        if (c === 'H') el.classList.add('ring-emerald-400');
+                        if (c === 'S') el.classList.add('ring-amber-400');
+                        if (c === 'I') el.classList.add('ring-blue-400');
+                        if (c === 'A') el.classList.add('ring-rose-400');
+                    }
+                }
+            });
+
             if (!allAbsen || allAbsen.length === 0) {
                 if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-12 text-slate-400 italic font-medium"><i class="fa-solid fa-calendar-xmark text-3xl text-slate-300 block mb-2"></i>Belum ada data absensi tercatat</td></tr>`;
                 if (cardContainer) cardContainer.innerHTML = `<div class="text-center py-12 text-slate-400 italic font-medium"><i class="fa-solid fa-calendar-xmark text-3xl text-slate-300 block mb-2"></i>Belum ada data absensi tercatat</div>`;
+                if (lmBtn) lmBtn.classList.add('hidden');
                 return;
             }
+
+            var filtered = allAbsen;
+            if (filterAbsenStatus) {
+                filtered = allAbsen.filter(function(x) { return x.status === filterAbsenStatus; });
+            }
+
+            if (filtered.length === 0) {
+                if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-12 text-slate-400 italic font-medium"><i class="fa-solid fa-filter-circle-xmark text-3xl text-slate-300 block mb-2"></i>Tidak ada data absensi untuk filter ini</td></tr>`;
+                if (cardContainer) cardContainer.innerHTML = `<div class="text-center py-12 text-slate-400 italic font-medium"><i class="fa-solid fa-filter-circle-xmark text-3xl text-slate-300 block mb-2"></i>Tidak ada data absensi untuk filter ini</div>`;
+                if (lmBtn) lmBtn.classList.add('hidden');
+                return;
+            }
+
+            var sliced = filtered.slice(0, limitAbsen);
 
             var htmlTable = '';
             var htmlCards = '';
             var mapStatus = { 'H': 'Hadir', 'S': 'Sakit', 'I': 'Izin', 'A': 'Alpa' };
             var mapColor = { 'H': 'emerald', 'S': 'amber', 'I': 'blue', 'A': 'rose' };
 
-            allAbsen.forEach(function (x, idx) {
+            sliced.forEach(function (x, idx) {
                 var st = mapStatus[x.status] || x.status;
                 var color = mapColor[x.status] || 'slate';
                 var kw = parseKegiatanDanWaktu(x.waktu);
+                var originalIdx = allAbsen.indexOf(x);
 
                 // Desktop Table Row
                 htmlTable += `
                 <tr class="hover:bg-slate-50 transition border-b border-slate-50 last:border-0">
-                    <td class="py-3 px-4 text-center text-slate-400 font-bold text-xs">${idx + 1}</td>
+                    <td class="py-3 px-4 text-center text-slate-400 font-bold text-xs">${originalIdx + 1}</td>
                     <td class="py-3 px-4 text-slate-600 font-semibold text-xs whitespace-nowrap"><i class="fa-regular fa-calendar mr-1.5 text-blue-500"></i>${x.tanggal}</td>
                     <td class="py-3 px-4">
                         <span class="font-extrabold text-slate-800 text-sm flex items-center gap-1.5">
@@ -1175,13 +1234,21 @@
                     </div>
                     <div class="flex items-center justify-between text-[11px] text-slate-500 font-semibold pt-0.5 border-t border-slate-100">
                         <span><i class="fa-solid fa-user-tie mr-1.5 text-slate-400"></i> Musyrif Pembina: <b class="text-slate-700 font-bold">${x.musyrif || '-'}</b></span>
-                        <span class="text-[10px] text-slate-300 font-bold">#${idx + 1}</span>
+                        <span class="text-[10px] text-slate-300 font-bold">#${originalIdx + 1}</span>
                     </div>
                 </div>
                 `;
             });
             if (tbody) tbody.innerHTML = htmlTable;
             if (cardContainer) cardContainer.innerHTML = htmlCards;
+
+            if (lmBtn) {
+                if (filtered.length > limitAbsen) {
+                    lmBtn.classList.remove('hidden');
+                } else {
+                    lmBtn.classList.add('hidden');
+                }
+            }
         }
 
         function prevPage() { if (currentPage > 1) { currentPage--; renderTable(); } }
