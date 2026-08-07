@@ -514,7 +514,8 @@
         window.onload = function () {
             initPWAModule();
             loadAppConfig();
-            var sess = localStorage.getItem('wali_session_v2');
+            var sess = null;
+            try { sess = localStorage.getItem('wali_session_v2'); } catch(e) {}
             if (sess) {
                 var d = JSON.parse(sess);
                 bukaDashboard(d.namaSantri);
@@ -587,7 +588,7 @@
             google.script.run
                 .withSuccessHandler(function (res) {
                     if (res.status === 'SUKSES') {
-                        localStorage.setItem('wali_session_v2', JSON.stringify(res));
+                        try { localStorage.setItem('wali_session_v2', JSON.stringify(res)); } catch(e) {}
                         bukaDashboard(res.namaSantri);
                     } else {
                         msg.innerText = res.msg;
@@ -622,7 +623,7 @@
 
         function aksiLogout() {
             if (confirm('Keluar dari aplikasi?')) {
-                localStorage.removeItem('wali_session_v2');
+                try { localStorage.removeItem('wali_session_v2'); } catch(e) {}
                 curNama = null;
                 if (autoRefreshInterval) clearInterval(autoRefreshInterval);
 
