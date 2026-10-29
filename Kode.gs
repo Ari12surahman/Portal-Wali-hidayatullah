@@ -346,6 +346,29 @@ function getProgresDanTargetWali(namaSantri) {
   }
 }
 
+// Pemetaan daftar surat per Juz untuk validasi dan filtering yang akurat
+var SURAT_DALAM_JUZ = {
+  30: [
+    "An-Naba'", "An-Nazi'at", "'Abasa", "At-Takwir", "Al-Infitar", 
+    "Al-Muthaffifin", "Al-Insyiqaq", "Al-Buruj", "At-Tariq", "Al-A'la", 
+    "Al-Ghasyiyah", "Al-Fajr", "Al-Balad", "Asy-Syams", "Al-Lail", 
+    "Ad-Duha", "Asy-Syarh", "At-Tin", "Al-'Alaq", "Al-Qadr", 
+    "Al-Bayyinah", "Az-Zalzalah", "Al-'Adiyat", "Al-Qari'ah", "At-Takasur", 
+    "Al-'Asr", "Al-Humazah", "Al-Fil", "Quraisy", "Al-Ma'un", 
+    "Al-Kautsar", "Al-Kafirun", "An-Nasr", "Al-Lahab", "Al-Ikhlas", 
+    "Al-Falaq", "An-Nas"
+  ],
+  29: [
+    "Al-Mulk", "Al-Qalam", "Al-Haqqah", "Al-Ma'arij", "Nuh", 
+    "Al-Jinn", "Al-Muzzammil", "Al-Muddassir", "Al-Qiyamah", "Al-Insan", 
+    "Al-Mursalat"
+  ],
+  28: [
+    "Al-Mujadilah", "Al-Hasyr", "Al-Mumtahanah", "As-Saff", "Al-Jumu'ah", 
+    "Al-Munafiqun", "At-Taghabun", "At-Talaq", "At-Tahrim"
+  ]
+};
+
 // --- HELPER KALKULASI PROGRES TERSTRUKTUR ---
 function getJuzRange(juzNum) {
   var j = parseInt(juzNum);
@@ -356,6 +379,86 @@ function getJuzRange(juzNum) {
     var e = (j * 20) + 1;
     return { start: s, end: e, totalHal: 20, nama: "Juz " + j };
   }
+  return null;
+}
+
+// Helper untuk menganalisis target Juz: mendukung single juz (Juz 29), rentang juz (Juz 29 s/d 30, Juz 28-30), maupun jumlah juz (2 Juz)
+function getMultiJuzInfo(str) {
+  if (!str) return null;
+  var s = String(str).trim();
+  var sLower = s.toLowerCase();
+
+  // 1. Cek rentang juz: "Juz 29 s/d 30", "Juz 29 - 30", "Juz 28 sampai 30", "Juz 1 s/d 3", dll
+  var mRange = sLower.match(/juz\s*(\d+)\s*(?:s\/d|-|sampai|hingga|&|,|\+)\s*(?:juz\s*)?(\d+)/i);
+  if (mRange && mRange[1] && mRange[2]) {
+    var j1 = parseInt(mRange[1]);
+    var j2 = parseInt(mRange[2]);
+    var startJ = Math.min(j1, j2);
+    var endJ = Math.max(j1, j2);
+    var allPages = {};
+    var totalHal = 0;
+    var surahsInMulti = {};
+
+    for (var j = startJ; j <= endJ; j++) {
+      var r = getJuzRange(j);
+      if (r) {
+        totalHal += r.totalHal;
+        for (var p = r.start; p <= r.end; p++) allPages[p] = true;
+      }
+      if (typeof SURAT_DALAM_JUZ !== 'undefined' && SURAT_DALAM_JUZ[j]) {
+        SURAT_DALAM_JUZ[j].forEach(function(srt) { surahsInMulti[normalizeSurat(srt)] = true; });
+      }
+    }
+    return {
+      type: 'range',
+      startJuz: startJ,
+      endJuz: endJ,
+      totalHal: totalHal,
+      pages: allPages,
+      suratMap: surahsInMulti,
+      nama: "Juz " + startJ + " s/d " + endJ
+    };
+  }
+
+  // 2. Cek jumlah Juz umum: "2 Juz", "3 Juz", "5 Juz"
+  var mCount = sLower.match(/(\d+)\s*juz/i);
+  if (mCount && mCount[1] && sLower.indexOf("juz 2") !== 0 && sLower.indexOf("juz 1") !== 0 && sLower.indexOf("juz 3") !== 0) {
+    var numCount = parseInt(mCount[1]);
+    if (numCount > 0 && numCount <= 30) {
+      return {
+        type: 'count',
+        totalHal: numCount * 20,
+        nama: numCount + " Juz",
+        pages: null,
+        suratMap: {}
+      };
+    }
+  }
+
+  // 3. Single Juz: "Juz 29", "JUZ:29", "Juz 30", dll
+  var mSingle = s.match(/JUZ:(\d+)/i) || sLower.match(/juz\s*(\d+)/i);
+  if (mSingle && mSingle[1]) {
+    var numJuz = parseInt(mSingle[1]);
+    var r = getJuzRange(numJuz);
+    if (r) {
+      var allPages = {};
+      for (var p = r.start; p <= r.end; p++) allPages[p] = true;
+      var surahsSingle = {};
+      if (typeof SURAT_DALAM_JUZ !== 'undefined' && SURAT_DALAM_JUZ[numJuz]) {
+        SURAT_DALAM_JUZ[numJuz].forEach(function(srt) { surahsSingle[normalizeSurat(srt)] = true; });
+      }
+      return {
+        type: 'single',
+        startJuz: numJuz,
+        endJuz: numJuz,
+        totalHal: r.totalHal,
+        pages: allPages,
+        suratMap: surahsSingle,
+        nama: r.nama
+      };
+    }
+  }
+
   return null;
 }
 
@@ -378,41 +481,94 @@ function kalkulasiProgressTarget(targetStr, stats, mqList) {
     return { persen: persen, tercapai: tercapai, sisa: sisa, surat: srtCount, hal: halCount, ayat: ayatCount };
   }
 
-  // 1. TERSTRUKTUR / HEURISTIK JUZ
+  // 1. TERSTRUKTUR / HEURISTIK JUZ (MENDUKUNG SINGLE JUZ MAUPUN MULTI-JUZ SEPERTI JUZ 29 S/D 30)
   if (tTrim.indexOf("JUZ:") === 0 || tLower.indexOf("juz") !== -1) {
-    var matchJuz = tTrim.match(/JUZ:(\d+)/i) || tLower.match(/juz\s*(\d+)/i);
-    if (matchJuz && matchJuz[1]) {
-      var numJuz = parseInt(matchJuz[1]);
-      var juzInfo = getJuzRange(numJuz);
-      if (juzInfo) {
-        var pagesDone = {};
-        setoranList.forEach(function(item) {
-          if (item.halAwal > 0 || item.halAkhir > 0) {
-            var ha = item.halAwal || item.halAkhir;
-            var hk = item.halAkhir || item.halAwal;
-            for (var p = Math.min(ha, hk); p <= Math.max(ha, hk); p++) {
-              if (p >= juzInfo.start && p <= juzInfo.end) {
-                pagesDone[p] = true;
-              }
-            }
+    var juzInfo = getMultiJuzInfo(tTrim);
+    if (juzInfo) {
+      // Gabungkan daftar surat dari Master_Quran sheet + pemetaan bawaan SURAT_DALAM_JUZ
+      var suratDalamJuz = Object.assign({}, juzInfo.suratMap || {});
+      if (mqList && mqList.length > 0 && juzInfo.pages) {
+        mqList.forEach(function(m) {
+          if (m.halaman && juzInfo.pages[m.halaman] && m.surat) {
+            suratDalamJuz[normalizeSurat(m.surat)] = true;
           }
         });
-        var completedHal = Object.keys(pagesDone).length;
-        if (completedHal === 0 && srtCount > 0 && (numJuz === 30 || numJuz === 29)) {
-          var maxS = numJuz === 30 ? 37 : 11;
-          persen = Math.min(100, Math.round((srtCount / maxS) * 100));
-          tercapai = srtCount + " dari " + maxS + " Surat (" + completedHal + " / " + juzInfo.totalHal + " Hal)";
-          var sisaS = Math.max(0, maxS - srtCount);
-          sisa = sisaS > 0 ? ("Sisa " + sisaS + " surat lagi di " + juzInfo.nama) : ("Target " + juzInfo.nama + " Selesai! 🎉");
-        } else {
-          persen = Math.min(100, Math.round((completedHal / juzInfo.totalHal) * 100));
-          tercapai = completedHal + " dari " + juzInfo.totalHal + " Halaman (" + Math.round(persen) + "%)";
-          var sisaH = Math.max(0, juzInfo.totalHal - completedHal);
-          sisa = sisaH > 0 ? ("Sisa " + sisaH + " halaman lagi di " + juzInfo.nama) : ("Target " + juzInfo.nama + " Selesai! 🎉");
-        }
-        return { persen: persen, tercapai: tercapai, sisa: sisa, surat: srtCount, hal: completedHal, ayat: ayatCount };
       }
+      
+      var pagesDoneInTarget = {};
+      var filteredSurahs = [];
+
+      setoranList.forEach(function(item) {
+        var itemSuratNorm = item.surat ? normalizeSurat(item.surat) : '';
+        var isInTargetJuz = false;
+        
+        // Cek berdasarkan rentang halaman setoran
+        if (juzInfo.pages && (item.halAwal > 0 || item.halAkhir > 0)) {
+          var ha = item.halAwal || item.halAkhir;
+          var hk = item.halAkhir || item.halAwal;
+          for (var p = Math.min(ha, hk); p <= Math.max(ha, hk); p++) {
+            if (juzInfo.pages[p]) {
+              pagesDoneInTarget[p] = true;
+              isInTargetJuz = true;
+            }
+          }
+        }
+        
+        // Cek berdasarkan nama surat jika cocok dengan surat di juz target
+        if (!isInTargetJuz && itemSuratNorm && suratDalamJuz[itemSuratNorm]) {
+          isInTargetJuz = true;
+        }
+        
+        if (isInTargetJuz && item.surat && item.surat !== '-' && item.surat !== '') {
+          if (filteredSurahs.indexOf(item.surat) === -1) filteredSurahs.push(item.surat);
+        }
+      });
+      
+      var completedHalInTarget = Object.keys(pagesDoneInTarget).length;
+      var filteredSrtCount = filteredSurahs.length;
+      var targetTotalHal = juzInfo.totalHal || 20;
+
+      // Hitung halaman ekstra santri di luar target ini (misal santri sudah tuntas Juz 29 dan juga punya hafalan Juz 30 / Juz 28)
+      var totalSantriHal = halCount;
+      var extraHalDiLuarTarget = Math.max(0, totalSantriHal - completedHalInTarget);
+      var totalJuzEst = (totalSantriHal / 20).toFixed(1);
+
+      // Jika setoran tanpa nomor halaman (hanya nama surat)
+      if (completedHalInTarget === 0 && filteredSrtCount > 0 && juzInfo.type === 'single') {
+        var maxS = (juzInfo.startJuz === 30) ? 37 : ((juzInfo.startJuz === 29) ? 11 : 10);
+        persen = Math.min(100, Math.round((filteredSrtCount / maxS) * 100));
+        tercapai = filteredSrtCount + " dari " + maxS + " Surat (" + juzInfo.nama + ")";
+        if (filteredSrtCount >= maxS) {
+          sisa = "Target " + juzInfo.nama + " Tuntas 100%! 🎉" + (extraHalDiLuarTarget > 0 ? " (+ hafalan lain " + extraHalDiLuarTarget + " hal)" : " Siap lanjut target grade berikutnya 🚀");
+        } else {
+          sisa = "Sisa " + (maxS - filteredSrtCount) + " surat lagi di " + juzInfo.nama;
+        }
+      } else {
+        // Berdasarkan halaman mushaf yang tuntas
+        persen = Math.min(100, Math.round((completedHalInTarget / targetTotalHal) * 100));
+        
+        if (completedHalInTarget >= targetTotalHal) {
+          persen = 100;
+          tercapai = juzInfo.nama + " Tuntas (100%)" + (extraHalDiLuarTarget > 0 ? " • Total: " + totalSantriHal + " Hal (~" + totalJuzEst + " Juz)" : " (" + completedHalInTarget + " Hal)");
+          sisa = "Target " + juzInfo.nama + " Selesai! 🎉" + (extraHalDiLuarTarget > 0 ? " (+ ada " + extraHalDiLuarTarget + " hal di luar target). Siap perbarui target grade! 🚀" : " Siap lanjut target grade berikutnya 🚀");
+        } else {
+          var sisaH = Math.max(0, targetTotalHal - completedHalInTarget);
+          tercapai = completedHalInTarget + " dari " + targetTotalHal + " Hal (" + persen + "%)" + (extraHalDiLuarTarget > 0 ? " • Total: " + totalSantriHal + " Hal" : "");
+          sisa = "Sisa " + sisaH + " halaman lagi di " + juzInfo.nama + (extraHalDiLuarTarget > 0 ? " (+ sudah ada " + extraHalDiLuarTarget + " hal di juz lain)" : "");
+        }
+      }
+
+      return { 
+        persen: persen, 
+        tercapai: tercapai, 
+        sisa: sisa, 
+        surat: filteredSrtCount || srtCount, 
+        hal: completedHalInTarget || totalSantriHal, 
+        totalSantriHal: totalSantriHal,
+        ayat: ayatCount 
+      };
     }
+
     var maxHal = 600;
     persen = Math.min(100, Math.round((halCount / maxHal) * 100));
     tercapai = halCount + " dari " + maxHal + " Halaman (" + srtCount + " Surat)";
@@ -513,7 +669,12 @@ function hitungTotalAyatDariRanges(mergedRanges) {
 function normalizeSurat(str) {
   if (!str) return "";
   var s = String(str).toLowerCase().trim();
+  // Hapus nomor urut di depan nama surat (misal "1. ", "114. ")
+  s = s.replace(/^\d+[\s\.\-_:]*/, "").trim();
+  // Hapus prefix umum surat
   s = s.replace(/^(?:q\.?s\.?|sura[th]?|quran sura[th]?)\s*(?:-|_|\s)*\s*/i, "").trim();
+  
+  // Variasi khusus yang sering berbeda ejaannya
   if (s.indexOf("lahab") !== -1 || s.indexOf("masad") !== -1) return "almasad";
   if (s.indexOf("inshirah") !== -1 || s.indexOf("insyirah") !== -1 || s.indexOf("syarh") !== -1 || s.indexOf("alam nas") !== -1) return "alinsyirah";
   if (s.indexOf("isra") !== -1 || s.indexOf("bani israil") !== -1) return "alisra";
@@ -521,6 +682,18 @@ function normalizeSurat(str) {
   if (s.indexOf("ghafir") !== -1 || s.indexOf("mumin") !== -1) return "almumin";
   if (s.indexOf("fushilat") !== -1 || s.indexOf("fussilat") !== -1 || s.indexOf("ha mim") !== -1) return "fushilat";
   if (s.indexOf("imran") !== -1) return "aliimran";
+  if (s.indexOf("insan") !== -1 || s.indexOf("dahr") !== -1) return "alinsan";
+  if (s.indexOf("zalzalah") !== -1 || s.indexOf("zilzal") !== -1) return "alzalzalah";
+  if (s.indexOf("kautsar") !== -1 || s.indexOf("kausar") !== -1) return "alkautsar";
+  if (s.indexOf("jatsiyah") !== -1 || s.indexOf("jasiyah") !== -1) return "aljatsiyah";
+  if (s.indexOf("takatsur") !== -1 || s.indexOf("takasur") !== -1) return "altakatsur";
+  if (s.indexOf("syams") !== -1 || s.indexOf("shams") !== -1) return "asyams";
+  if (s.indexOf("bayyinah") !== -1 || s.indexOf("bayinah") !== -1) return "albayyinah";
+  if (s.indexOf("buruj") !== -1 || s.indexOf("burooj") !== -1) return "alburuj";
+  if (s.indexOf("tariq") !== -1 || s.indexOf("thoriq") !== -1) return "attariq";
+  if (s.indexOf("ghasyiyah") !== -1 || s.indexOf("ghasiyah") !== -1) return "alghasyiyah";
+  
+  // Standardisasi transliterasi huruf
   s = s.replace(/sh/g, "sy").replace(/th/g, "t").replace(/ts/g, "t").replace(/dz/g, "z").replace(/dh/g, "z").replace(/oo/g, "u").replace(/ee/g, "i");
   s = s.replace(/[^a-z0-9]/g, "").replace(/([a-z0-9])\1+/g, "$1").replace(/([aiueo])h$/i, "$1");
   return s;
