@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mutabaah-wali-cache-v2';
+const CACHE_NAME = 'mutabaah-wali-cache-v3';
 
 self.addEventListener('install', function(e) {
     self.skipWaiting();
